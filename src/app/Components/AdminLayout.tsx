@@ -22,6 +22,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               </a>
             </li>
             <li className="mb-2">
+              <a href='/login' className="block py-2 px-4 bg-gray-700 hover:bg-gray-600 rounded">
+                Login
+              </a>
+            </li>
+            <li className="mb-2">
               <a href='/dashboard' className="block py-2 px-4 bg-gray-700 hover:bg-gray-600 rounded">
                 Dashboard
               </a>

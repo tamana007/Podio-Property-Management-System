@@ -13,14 +13,14 @@ interface IUser extends Document {
 
 // Define the schema
 const userSchema: Schema = new Schema({
-  username: { type: String, required: true },
-  password: { type: String, required: true },
-  email: { type: String, required: true }
+  username: { type: String,required: true, default:'tau'},
+  password: { type: String,default:'ali' },
+  email: { type: String, required: true ,default:'samad@gmail.com'}
   // createdAt: { type: Date, default: Date.now },
   // updatedAt: { type: Date, default: Date.now }
 });
 
 // Create a model using the schema
-const User = mongoose.model<IUser>('User', userSchema);
+const UserReg = mongoose.model<IUser>('User', userSchema,'registerUser');
 
-export default User;
+export default UserReg;

@@ -1,4 +1,6 @@
 //USING NEXTJS VERSION 13
+import {connectToDatabase} from '@/db/model/db'
+import UserReg from '@/db/model/User';
 import { Padauk } from 'next/font/google';
 import { NextResponse, NextRequest } from 'next/server';
 
@@ -7,17 +9,22 @@ import { NextResponse, NextRequest } from 'next/server';
 // };
 
 export const POST = async (request: NextRequest) => {
+  await connectToDatabase();
+
   const body = await request.json();
   const email=body.email;
-  const userName=body.username;
+  const username=body.username;
   const password=body.password;
-
-
+  const data={username,password,email};
+  console.log('data checking',data);
   
   
 
-  // Do something
+  const sendtoDB= new UserReg(data).save();
+// console.log('send to db',sendtoDB);
 
+
+  // Send USER Credentials to Db
   return NextResponse.json({ message: 'Operation successful' }, { status: 200 });
 };
 
