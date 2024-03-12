@@ -2,7 +2,8 @@ import mongoose from 'mongoose'
 
 export async function connectToDatabase() {
   try {
-    const url = "mongodb+srv://tamana:tamana@cluster0.o8fimnz.mongodb.net/";
+    const url = "mongodb+srv://tamana:tamana@cluster0.o8fimnz.mongodb.net/propertyRegistration?retryWrites=true&w=majority";
+    
     await mongoose.connect(url);
 
     mongoose.connection.on('connected', () => {
