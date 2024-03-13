@@ -21,8 +21,6 @@ export const POST = async (request: NextRequest) => {
   
 
   const sendtoDB= new UserReg(data).save();
-// console.log('send to db',sendtoDB);
-
 
   // Send USER Credentials to Db
   return NextResponse.json({ message: 'Operation successful' }, { status: 200 });
