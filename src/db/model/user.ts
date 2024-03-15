@@ -21,6 +21,6 @@ const userSchema: Schema = new Schema({
 });
 
 // Create a model using the schema
-const UserReg = mongoose.model<IUser>('User', userSchema,'registerUser');
+const UserReg = mongoose.models.registerUser || mongoose.model('registerUser', userSchema);
 
 export default UserReg;
