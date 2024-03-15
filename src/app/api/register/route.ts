@@ -8,6 +8,20 @@ import { NextResponse, NextRequest } from 'next/server';
 //   return NextResponse.json({ message: 'Hello, Next.js Version 13!' }, { status: 200 });
 // };
 
+export const GET=async(NextRequest:NextResponse)=>{
+  await connectToDatabase();
+  const options= await UserReg.find({});
+  if (options) {
+    console.log('here are the opotion for users',options);
+  return NextResponse.json({ options });
+
+    
+    // return NextResponse.json(options);
+  }
+return NextResponse.json({message:'not send'})
+
+}
+
 export const POST = async (request: NextRequest) => {
   await connectToDatabase();
 
