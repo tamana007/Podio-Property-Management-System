@@ -5,7 +5,17 @@ import { response } from "express";
 import React, { useEffect, useState } from "react";
 
 const WebForm: React.FC = () => {
-  const [option,setOption]=useState(null);
+  // const [options,setOptions]=useState({});
+  // const [options, setOptions] = useState<Option[]>([]);
+  // const [selectedOption, setSelectedOption] = useState<Option[]>([]);
+  interface OptionType {
+    label: string;
+    value: string;
+  }
+  
+  const [options, setOptions] = useState<OptionType[]>([]);
+  
+
 
 
 
@@ -15,10 +25,12 @@ useEffect(()=>{
       const getApi=await fetch("/api/register")
       
       const result=await getApi.json();
-      console.log(result,'reeeeeeeeeeeeeeeeeeeeeeeeeee');
+    
 
-      setOption(result);
-      console.log('result from rout api',result);
+      console.log(result,'reeeeeeeeeeeeeeeeeeeeeeeeeee');
+      setOptions(prev=>([...prev,result]));
+     
+      console.log('option from rout api',options);
       
     } catch (error) {
       // log('error occured',error)
@@ -32,20 +44,7 @@ useEffect(()=>{
   getOptions();
 
 },[])
-// useEffect(() => {
-//   const getOptions = async () => {
-//     try {
-//       const getapi = await fetch('/api/register');
-//       const result = await getapi.json();
-//       setOption(result);
-//       console.log(result);
-//     } catch (error) {
-//       console.error('Error fetching options:', error);
-//     }
-//   };
 
-//   getOptions();
-// }, []);
 
 
   return (
@@ -56,18 +55,27 @@ useEffect(()=>{
         </h1>
 
         {/* Dropdown */}
-        {/* <div className="mb-4">
-          <label htmlFor="sellerInfo" className="block mb-1 text-black">
-            Lead Created By:
-          </label>
-          <select value={selectedOption || ""} onChange={handleChange}>
-            <option value="">Select an option</option>
-            {options.map((option, index) => (
-              <option key={index} value={option.value}>
-                {option.label}
-              </option>
-            ))}
+        <select value='select your name' className="block mb-1 text-black" style={{ color: 'black' }}>
+  <option value="">Select an option</option>
+  {options.map((option, index) => (
+    <option key={index} value={option.value} className="text-black">
+      {option.label}
+    </option>
+  ))}
+</select>
+
+
+
+        {/* tring dropdown------------ */}
+        {/* <div className="mb-4 block  text-black" >
+          <label htmlFor="sellerInfo" >Lead Created By</label>
+          <span className="mb-6  text-black" >
+          <select value='select' >
+            <option value='ali'></option>
+            <option value='ali'></option>
           </select>
+          </span>
+          
         </div> */}
         {/* Input for seller's information */}
         <div className="mb-4">
