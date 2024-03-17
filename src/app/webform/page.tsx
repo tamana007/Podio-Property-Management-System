@@ -55,12 +55,12 @@ const WebForm: React.FC = () => {
         </div>
         <div className="mb-4 text-black">
           <select
-            value="select your name"
+            // value="select your name"
             className="w-full px-3 py-2 border rounded-md"
             style={{ color: "black" }}
           >
             <option value="" className="w-full px-3 py-2 border rounded-md">
-              Select an option
+              Select your Name
             </option>
             {options.map((option, index) => (
               <option key={index} value={option._id} className="text-black">
