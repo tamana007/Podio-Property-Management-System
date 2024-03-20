@@ -26,7 +26,7 @@ interface IWebform extends Document{
   sellerEmail:{type:String},
   address:{type:String},
   note:{type:String},
-  motivation:{type:Boolean},
+  motivation:{type:String},
   idealPrice:{type:Number},
  })
 

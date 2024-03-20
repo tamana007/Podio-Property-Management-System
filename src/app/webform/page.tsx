@@ -12,9 +12,70 @@ const WebForm: React.FC = () => {
   interface OptionType {
     _id: number;
     username: string;
-  }
+  };
+
 
   const [options, setOptions] = useState<OptionType[]>([]);
+  const [userName,setUserName]=useState<string>('');
+  const [sellerName, setSellerName]=useState<string>('');
+  const [phoneNumber,setPhoneNumber]=useState<string>('');
+  const [otherPhone,setOtherPhone]=useState<string>('');
+  const [sellerEmail,setSellerEmail]=useState<string>('');
+  const [propertyAddress,setPropertyAddress]=useState<string>('');
+  const [notes,setNotes]=useState<string>('');
+  const [motivation,setMotivation]=useState<string>('');
+  const [idealPrice,setIdealPrice]=useState<number|undefined>(undefined);
+
+  const handleNameChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedValue = event.target.value;
+    setUserName(selectedValue);
+    // console.log('optionsss',userName);
+    
+  };
+  const handleSellerNameChange=(e:React.ChangeEvent<HTMLInputElement>)=>{
+    const change=e.target.value;
+    setSellerName(change);
+    // console.log('selerrrr',sellerName);
+  }
+  const handlePhoneNumber=(e:React.ChangeEvent<HTMLInputElement>)=>{
+    setPhoneNumber(e.target.value);
+console.log('phone',phoneNumber);
+  }
+  const handleOtherPhone=(e:React.ChangeEvent<HTMLInputElement>)=>{
+    setOtherPhone(e.target.value);
+    // console.log('other phone',otherPhone);
+    
+  }
+  const handleOtherEmail=(e:React.ChangeEvent<HTMLInputElement>)=>{
+setSellerEmail(e.target.value);
+console.log('email',sellerEmail);
+
+  }
+
+  const handlePropertyAddress=(e:React.ChangeEvent <HTMLInputElement>)=>{
+    setPropertyAddress(e.target.value);
+    console.log('property address',propertyAddress);
+    
+
+  }
+  const handleNotes=(e:React.ChangeEvent <HTMLInputElement>)=>{
+    setNotes(e.target.value);
+    console.log('notes',notes);
+    
+  }
+  const handleMotivation=(e:React.ChangeEvent <HTMLInputElement>)=>{
+    setMotivation(e.target.value);
+    console.log('motivation',motivation);
+    
+
+  }
+  const handleIdealPrice=(e:React.ChangeEvent <HTMLInputElement>)=>{
+    setIdealPrice(e.target.value)
+    console.log('ideal price',idealPrice);
+    
+
+  }
+
 
   useEffect(() => {
     const getOptions = async () => {
@@ -23,19 +84,10 @@ const WebForm: React.FC = () => {
 
         const result = await getApi.json();
 
-        console.log(result.options, "reeeeeeeeeeeeeeeeeeeeeeeeeee");
-        // setOptions((prev) => {...prev, result}));
+        // console.log(result.options, "reeeeeeeeeeeeeeeeeeeeeeeeeee");
         setOptions(result.options);
-        // setOptions(...result,result)
-
-        // setOptions([
-        //   { label: "Option 1", value: "option1" },
-        //   { label: "Option 2", value: "option2" },
-        //   // Add more options as needed
-        // ]);
       } catch (error) {
-        // log('error occured',error)
-        console.log("bute");
+        console.log("error fetching users",error);
       }
     };
     getOptions();
@@ -46,7 +98,7 @@ const WebForm: React.FC = () => {
     <div className="flex justify-center items-center h-screen text-black">
       <div className="w-full max-w-xl p-6 bg-gray-100 rounded-lg">
         <h1 className="text-3xl font-bold mb-6 text-center text-black">
-          EXTREME REIS LEADS
+          Texas Propmover LLC  LEADS
         </h1>
 
         {/* Dropdown */}
@@ -55,7 +107,7 @@ const WebForm: React.FC = () => {
         </div>
         <div className="mb-4 text-black">
           <select
-            // value="select your name"
+          onChange={handleNameChange}
             className="w-full px-3 py-2 border rounded-md"
             style={{ color: "black" }}
           >
@@ -63,7 +115,7 @@ const WebForm: React.FC = () => {
               Select your Name
             </option>
             {options.map((option, index) => (
-              <option key={index} value={option._id} className="text-black">
+              <option key={index} value={option.username} className="text-black">
                 {option.username}
               </option>
             ))}
@@ -78,6 +130,7 @@ const WebForm: React.FC = () => {
             id="sellerInfo"
             className="w-full px-3 py-2 border rounded-md"
             placeholder="Enter seller's phone number, email, or other"
+            onChange={handleSellerNameChange}
           />
         </div>
         <div className="mb-4">
@@ -89,6 +142,7 @@ const WebForm: React.FC = () => {
             id="sellerInfo"
             className="w-full px-3 py-2 border rounded-md"
             placeholder="Enter seller's phone number, email, or other"
+            onChange={handlePhoneNumber}
           />
         </div>
 
@@ -97,14 +151,10 @@ const WebForm: React.FC = () => {
             Seller's Phone
           </label>
           <div className="w-full border-solid hover:border-dotted">
-            <select>
-              <option>Other</option>
-              <option>two</option>
-            </select>
             <input  type="text"
             id="sellerPhone"
-            // className="w-full px-1 py-1 border rounded-md"
-            className="w-5/6 px-1 py-1 border rounded-md"
+          onChange={handlePhoneNumber}
+            className="w-full px-1 py-1 border rounded-md"
             placeholder="Enter seller's phone number"></input>
           </div>
         </div>
@@ -115,13 +165,21 @@ const WebForm: React.FC = () => {
             Seller's Email
           </label>
           <div className="w-full border-solid hover:border-dotted">
+            <input  type="text"
+            onChange={handleOtherPhone}
+            id="sellerPhone"
+            className="w-full px-1 py-1 border rounded-md"
+            placeholder="Enter seller's phone number"></input>
+          </div>
+
+          <div className="w-full border-solid hover:border-dotted">
             <select>
               <option>Other</option>
               <option>two</option>
             </select>
             <input  type="text"
             id="sellerPhone"
-            // className="w-full px-1 py-1 border rounded-md"
+            onChange={handleOtherEmail}
             className="w-5/6 px-1 py-1 border rounded-md"
             placeholder="Enter seller's phone number"></input>
           </div>
@@ -133,6 +191,7 @@ const WebForm: React.FC = () => {
             Property Address
           </label>
           <input
+          onChange={handlePropertyAddress}
             type="text"
             id="propertyAddress"
             className="w-full px-3 py-2 border rounded-md"
@@ -146,6 +205,7 @@ const WebForm: React.FC = () => {
             Note
           </label>
           <textarea
+          onChange={handleNotes}
             id="note"
             className="w-full px-3 py-2 border rounded-md"
             rows={4}
@@ -153,18 +213,22 @@ const WebForm: React.FC = () => {
           ></textarea>
         </div>
 
-        {/* Motivation and ideal price */}
+  
         <div className=" mb-4">
           <div>
             <label htmlFor="motivation" className="block mb-1 text-black">
               Motivation
             </label>
-            <select className="w-full px-3 py-2 border rounded-md" >
+            <select className="w-full px-3 py-2 border rounded-md" 
+            onChange={handleMotivation}>
             <option>
              Please select
               </option>
               <option>
-                second
+                Motivated
+              </option>
+              <option>
+                Not Motivated
               </option>
             </select>
            
@@ -178,6 +242,7 @@ const WebForm: React.FC = () => {
               id="idealPrice"
               className="w-full px-3 py-2 border rounded-md"
               placeholder="Enter seller's ideal price"
+              onChange={handleIdealPrice}
             />
           </div>
         </div>
