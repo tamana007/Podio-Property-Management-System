@@ -1,7 +1,7 @@
 import mongoose,{Schema,Document} from "mongoose";
 
 
-//Define an interface representing a focument in Mongoose
+//Define an interface representing a document in Mongoose
 
 interface IWebform extends Document{
   useId:number;
@@ -31,5 +31,5 @@ interface IWebform extends Document{
  })
 
  //Create a model Using Schema
- const Webform=mongoose.models.reginsterLead || mongoose.model('reginsterLead',webformSchema)
+ const Webform=mongoose.models.registerLead || mongoose.model('registerLead',webformSchema)
 
