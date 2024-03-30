@@ -12,27 +12,30 @@ const WebForm: React.FC = () => {
   }
 
   interface DataType {
-    sellerName: string;
+    
     createdBy: string;
-    idealPrice:number;
-    note:string
-    propertyAddress:string
-    otherEmail:string
-    sellerEmail:string
-    sellerPhone:string
-    sellerOpenPhone:string
+    sellerName: string;
+    sellerPhone: number;
+    sellerOtherPhone: number;
+    sellerEmail: string;
+    otherEmail: string;
+    address: string;
+    note: string;
+    motivation: string;
+    idealPrice: number;
   }
 
   const initialData: DataType = {
-    sellerName: "",
     createdBy: "",
-    idealPrice: 0 ,
-    note:"",
-    propertyAddress:"",
-    otherEmail:"",
-    sellerEmail:"",
-    sellerPhone:"",
-    sellerOpenPhone:"",
+    sellerName: "",
+    idealPrice: 0,
+    note: "",
+    otherEmail: "",
+    sellerEmail: "",
+    address: "",
+    sellerPhone: 777777,
+    sellerOtherPhone: 3333,
+    motivation: "",
   };
   const [allData, setallData] = useState(initialData);
 
@@ -52,14 +55,11 @@ const WebForm: React.FC = () => {
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
-      const sendData=await fetch("/api/webform",{
-        method:'POST',
-        body:JSON.stringify({allData})
-      })
-      
-    } catch (error) {
-      
-    }
+      const sendData = await fetch("/api/webform", {
+        method: "POST",
+        body: JSON.stringify({ allData }),
+      });
+    } catch (error) {}
     console.log("all data how are you", allData);
   };
 
@@ -129,7 +129,7 @@ const WebForm: React.FC = () => {
             Seller's OpenPhone/Dialpad Account
           </label>
           <input
-            name="sellerOpenPhone"
+            name="sellerPhone"
             type="text"
             id="sellerInfo"
             className="w-full px-3 py-2 border rounded-md"
@@ -144,7 +144,7 @@ const WebForm: React.FC = () => {
           </label>
           <div className="w-full border-solid hover:border-dotted">
             <input
-              name="sellerPhone"
+              name="sellerOtherPhone"
               type="text"
               id="sellerPhone"
               onChange={handleInputChange}
@@ -191,7 +191,7 @@ const WebForm: React.FC = () => {
             Property Address
           </label>
           <input
-            name="propertyAddress"
+            name="address"
             onChange={handleInputChange}
             type="text"
             id="propertyAddress"
@@ -226,8 +226,8 @@ const WebForm: React.FC = () => {
               onChange={handleInputChange}
             >
               <option>Please select</option>
-              <option value='motivated'>Motivated</option>
-              <option value='Not Motivated'>Not Motivated</option>
+              <option value="motivated">Motivated</option>
+              <option value="Not Motivated">Not Motivated</option>
             </select>
           </div>
           <div>

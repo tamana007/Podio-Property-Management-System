@@ -1,6 +1,7 @@
 import {connectToDatabase} from '@/db/model/db'
 // import WebForm from '@/app/webform/page'
-import WebForm from '@/db/model/User';
+// import WebForm from '@/db/model/User';
+import Webform from '@/db/model/Webform';
 import { NextRequest,NextResponse } from 'next/server'
 
 export const POST=async(request: NextRequest)=>{
@@ -10,8 +11,13 @@ export const POST=async(request: NextRequest)=>{
   const webform=data.allData;
 
   // const savetoDv=new WebForm(webform).save();
-  const sendtoDb=new WebForm(webform).save()
-  // console.log('sepecifis data',webform);
+  const sendtoDb=await new Webform(webform).save()
+
+  if(sendtoDb){
+    console.log('sendt to db-------------------------------------',sendtoDb);
+    
+  }
+  console.log('sepecifis data',webform);
   
   // console.log('------------------------data',data);
   return NextResponse.json({message:"done"},{status:200})
