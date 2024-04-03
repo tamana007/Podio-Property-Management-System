@@ -8,66 +8,45 @@ import { use } from 'react';
 
 
 
-export const POST=async(NextRequest:NextResponse)=>{
+export const POST=async(request:NextRequest)=>{
   await connectToDatabase();
-const body=await NextRequest.json();
-const email=body.email;
-console.log("email", email)
-const password=body.password;
+const body=await request.json();
+const emailFromUI=body.email;
+const passwordFromUI=body.password;
+// const userId=request.url;
+
+console.log('check UI user and passwoed',emailFromUI,passwordFromUI);
+
 
 //Check Database
-const checkEmail=await UserReg.findOne({email})
-// const dbemail= checkEmail?.email;
-// const id=checkEmail?._id;
-// const dbPass=checkEmail?.password;
-// const checkPassword=await UserReg.findOne({email});
-console.log('db email -----------------',checkEmail);
+// const checkEmail=await UserReg.findOne({passwordFromUI})
+const checkEmail = await UserReg.findOne({ email: emailFromUI });
 
-if(checkEmail){
-// if (!checkEmail || !password || dbPass !== password) {
-  return NextResponse.json('hiii');
-  // return NextResponse.status(400).send({ message: "User already exists" });
+const dbemail= await checkEmail?.email;
+const id=await checkEmail?._id;
+const dbPass=await checkEmail?.password;
+
+
+
+// if(checkEmail){
+  if (!checkEmail || (checkEmail.email !== emailFromUI || checkEmail.password !== passwordFromUI)) {
+    
+    console.log('not found,,,,,,,,,,,,,,,,,,,,,,,,,,,,',emailFromUI);
+    // console.log('user IDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD',userId);
+    
+    // console.log('email from user.......................................',emailFromUI);
+    // console.log('password from user.......................................',passwordFromUI);
+    // console.log('everything form db.......................................',checkEmail);
+
+    // console.log('email from db.......................................',dbemail);
+    // console.log('password from db.......................................',dbPass);
+
 }
 else{
-  return NextResponse.json("bye");
-}
-
-// export const POST = async (NextRequest: NextResponse) => {
-//   await connectToDatabase()
-
-//   const body = await NextRequest.json();
-//   const email = body.email;
-//   const password = body.password;
-
-//   // Check Database
-//   const user = await UserReg.findOne({ email });
-//   // const id=user?._id;
-//   const dbemail=user?.email;
-//   console.log('db emai',dbemail);
+  return NextResponse.json({message:"suceed",id});
+  // console.log('found it suceed....................................................................................');
   
-  // const dbPass=user?.password;
-
-  // if (!user || (user.email !== email || user.password !== password)) {
-    // return NextResponse.json('Invalid email or password');
-    // console.log('not found,,,,,,,,,,,,,,,,,,,,,,,,,,,,',email);
-    
-//   // }
-//   if (!dbemail) {
-// // console.log('checkEmail.......................... founded Okay',id);
-// // console.log('email,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,',dbemail);
-// // console.log('passowrd...................................',dbPass);
-// console.log('wright--------------------------------------------------------------');
-
-    
-//   }
-  // else{
-  //   NextResponse.json({'Finaly':user})
-  //   // console.log('founded');
-    
-  // }
-
-
-
+}
 
 
   

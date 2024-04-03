@@ -10,11 +10,6 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    // const formData=new FormData();
-    // formData.append('email',email);
-    // formData.append('password',password);
-    
-    // Send Email and password to backend
     const checkData= await fetch('/api/login',{
       method:'Post',
       body:JSON.stringify({email,password}),
@@ -34,6 +29,7 @@ const Login: React.FC = () => {
     console.log('Register button clicked');
     setShowRegister(true);
   };
+  
 
   return (
     !showRegister?(

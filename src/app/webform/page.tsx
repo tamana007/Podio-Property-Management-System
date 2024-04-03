@@ -12,7 +12,6 @@ const WebForm: React.FC = () => {
   }
 
   interface DataType {
-    
     createdBy: string;
     sellerName: string;
     sellerPhone: number;
@@ -38,6 +37,7 @@ const WebForm: React.FC = () => {
     motivation: "",
   };
   const [allData, setallData] = useState(initialData);
+  const [submit,setSubmit]=useState<boolean>(true);
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -54,13 +54,20 @@ const WebForm: React.FC = () => {
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    let userId=options.map((op)=>op._id)
+
     try {
       const sendData = await fetch("/api/webform", {
         method: "POST",
         body: JSON.stringify({ allData }),
       });
     } catch (error) {}
-    console.log("all data how are you", allData);
+    // console.log("all data how are you", allData);
+    setSubmit(!submit);
+    console.log('optionssssssssssssss',options);
+    console.log('user id',userId);
+    
+    
   };
 
   useEffect(() => {
@@ -79,6 +86,8 @@ const WebForm: React.FC = () => {
   }, []);
 
   return (
+    <>
+    {submit?(
     <div className="flex justify-center items-center min-h-screen text-black">
       <div className="w-full max-w-4xl p-6 bg-gray-100 rounded-lg">
         <h1 className="text-3xl font-bold mb-6 text-center text-black">
@@ -256,6 +265,11 @@ const WebForm: React.FC = () => {
         </div>
       </div>
     </div>
+    ):
+    (
+    <div>submitted</div>)
+}
+    </>
   );
 };
 

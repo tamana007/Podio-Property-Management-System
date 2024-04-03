@@ -5,12 +5,11 @@ import Webform from '@/db/model/Webform';
 import { NextRequest,NextResponse } from 'next/server'
 
 export const POST=async(request: NextRequest)=>{
-  // console.log('enitereeeeeeeeeeeeeee',NextRequest);
   await connectToDatabase();
   const data=await request.json();
   const webform=data.allData;
 
-  // const savetoDv=new WebForm(webform).save();
+
   const sendtoDb=await new Webform(webform).save()
 
   if(sendtoDb){
