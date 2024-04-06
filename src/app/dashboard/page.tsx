@@ -30,6 +30,11 @@ const Page: React.FC = () => {
   // };
 
   const [lead, setLead] = useState<DataType[]>([]);
+  const [selectedLead, setSelectedLead] = useState<DataType | null>(null);
+
+  const handleLeadClick = (leadItem: DataType) => {
+    setSelectedLead(leadItem);
+  };
 
   useEffect(() => {
     const toFetch = async () => {
@@ -54,32 +59,72 @@ const Page: React.FC = () => {
   return (
     <AdminLayout>
       {/* Page Content */}
-      <div>
-        <div className="flex h-screen bg-gray-100">
-          {/* Main content */}
-          <div className="flex-1 p-4">
+      {/* <div>
+       */}
+
+      <div className="flex h-screen bg-gray-100">
+        {/* Left Section */}
+        <div className="w-1/2 p-4 border-r">
+          {selectedLead && (
+            <div className="bg-white rounded-lg shadow-md p-6 text-black">
+              <h2 className="text-xl font-semibold mb-4">Lead Details</h2>
+              <p>Created By: {selectedLead.createdBy}</p>
+              {/* Display other details here */}
+            </div>
+          )}
+        </div>
+        {/* Right Section */}
+        <div className="w-1/2 p-4">
+          <h1 className="text-xl font-semibold mb-4 text-black">
+            Leads Created By
+          </h1>
+          <div className="flex justify-between">
+          {/* <h2 className="text-xl font-semibold mb-4 text-black">
+            Overall Count:
+          </h2> */}
+          <h2 className="text-xl font-semibold mb-4" style={{color:"#7a7575"}}>Overall Count:</h2>
+                <h2 className="text-xl font-semibold mb-4"style={{color:"#7a7575"}}>600</h2>
+          </div>
+          
+          {lead.map((item, index) => (
+            <div
+              key={index}
+              className=" cursor-pointer bg-white rounded-lg shadow-md p-6 mb-4 text-black"
+              onClick={() => handleLeadClick(item)}
+            >
+              <div className="flex justify-between">
+                <h2 className="text-xl font-semibold mb-4">{item.createdBy}</h2>
+                <h2 className="text-xl font-semibold mb-4">
+                  Count {item.createdBy}
+                </h2>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Main content */}
+      {/* <div className="flex-1 p-4">
             {/* {
           lead.map(()=>{})
         } */}
+      {/* <h1 className="bg-black">Leads Created By</h1>
             {lead.map((item) => {
               return <div>
-                
-                
-                <div className="bg-black rounded-lg shadow-md p-6">
+                 */}
+
+      {/* <div className="bg-black rounded-lg shadow-md p-6">
               <h2 className="text-xl font-semibold mb-4">
-                Welcome to the Dashboard
-              </h2>
-              {/* Your dashboard content here */}
-            </div>
-                
-                
-                
-                </div>;
-            })}
-            
-          </div>
-        </div>
-      </div>
+                Welcome to the Dashboard {item.createdBy}
+              </h2> */}
+      {/* Your dashboard content here */}
+      {/* </div> */}
+
+      {/* </div>; */}
+      {/* })} */}
+
+      {/* </div> */}
+      {/* </div> */}
+      {/* </div> */}
     </AdminLayout>
   );
 };
