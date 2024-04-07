@@ -16,18 +16,7 @@ const Page: React.FC = () => {
     motivation: string;
     idealPrice: number;
   }
-  // const initialData: DataType = {
-  //   createdBy: "",
-  //   sellerName: "",
-  //   idealPrice: 0,
-  //   note: "",
-  //   otherEmail: "",
-  //   sellerEmail: "",
-  //   address: "",
-  //   sellerPhone: 777777,
-  //   sellerOtherPhone: 3333,
-  //   motivation: "",
-  // };
+
 
   const [lead, setLead] = useState<DataType[]>([]);
   const [selectedLead, setSelectedLead] = useState<DataType | null>(null);
@@ -68,7 +57,10 @@ const Page: React.FC = () => {
           {selectedLead && (
             <div className="bg-white rounded-lg shadow-md p-6 text-black">
               <h2 className="text-xl font-semibold mb-4">Lead Details</h2>
-              <p>Created By: {selectedLead.createdBy}</p>
+              <p>CreatedBy: {selectedLead.createdBy}</p>
+              <p>Location: {selectedLead.address}</p>
+              <p>SellerName: {selectedLead.sellerName}</p>
+
               {/* Display other details here */}
             </div>
           )}
@@ -102,29 +94,7 @@ const Page: React.FC = () => {
           ))}
         </div>
       </div>
-      {/* Main content */}
-      {/* <div className="flex-1 p-4">
-            {/* {
-          lead.map(()=>{})
-        } */}
-      {/* <h1 className="bg-black">Leads Created By</h1>
-            {lead.map((item) => {
-              return <div>
-                 */}
-
-      {/* <div className="bg-black rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-semibold mb-4">
-                Welcome to the Dashboard {item.createdBy}
-              </h2> */}
-      {/* Your dashboard content here */}
-      {/* </div> */}
-
-      {/* </div>; */}
-      {/* })} */}
-
-      {/* </div> */}
-      {/* </div> */}
-      {/* </div> */}
+   
     </AdminLayout>
   );
 };

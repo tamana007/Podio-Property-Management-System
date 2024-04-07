@@ -4,6 +4,7 @@ import { log } from "console";
 import { response } from "express";
 import { IntegerType } from "mongodb";
 import React, { useEffect, useState } from "react";
+import AdminLayout from "../Components/AdminLayout";
 
 const WebForm: React.FC = () => {
   interface OptionType {
@@ -87,6 +88,7 @@ const WebForm: React.FC = () => {
 
   return (
     <>
+    <AdminLayout>
     {submit?(
     <div className="flex justify-center items-center min-h-screen text-black">
       <div className="w-full max-w-4xl p-6 bg-gray-100 rounded-lg">
@@ -269,6 +271,7 @@ const WebForm: React.FC = () => {
     (
     <div>submitted</div>)
 }
+</AdminLayout>
     </>
   );
 };

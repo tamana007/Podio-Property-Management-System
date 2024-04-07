@@ -27,6 +27,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               </a>
             </li>
             <li className="mb-2">
+              <a href="./webform" className="block py-2 px-4 bg-gray-700 hover:bg-gray-600 rounded">
+                Add Lead
+              </a>
+            </li>
+            <li className="mb-2">
               <a href='/dashboard' className="block py-2 px-4 bg-gray-700 hover:bg-gray-600 rounded">
                 Dashboard
               </a>
@@ -36,11 +41,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 Properties
               </a>
             </li>
-            <li className="mb-2">
-              <a href="./webform" className="block py-2 px-4 bg-gray-700 hover:bg-gray-600 rounded">
-                Leads
-              </a>
-            </li>
+           
             {/* Add more sidebar links as needed */}
           </ul>
         </div>
@@ -50,7 +51,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       <div className="flex-1">
         {/* Page Header */}
         <div className="bg-gray-200 p-4">
-          <h2 className="text-xl font-semibold">Dashboard</h2>
+          <h2 className="text-xl font-semibold text-black">TEXAS PROPMOVER LLC LEADS</h2>
         </div>
 
         {/* Page Content */}
