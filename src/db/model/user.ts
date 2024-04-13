@@ -13,6 +13,7 @@ interface IUser extends Document {
 
 // Define the schema
 const userSchema: Schema = new Schema({
+  // userId: {type:String, }
   username: { type: String,required: true, default:'tau'},
   password: { type: String,default:'ali' },
   email: { type: String, required: true ,default:'samad@gmail.com'}

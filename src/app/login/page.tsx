@@ -2,11 +2,16 @@
 import React, { useState } from 'react';
 import Register from '@/app/Components/Register'
 import AdminLayout from '../Components/AdminLayout';
+import AddLead from '@/app/Components/AddLead'
+// import { useRouter } from 'next/router';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const[showRegister,setShowRegister]=useState(false);
+  const [id,setId]=useState<Number>();
+  // const router = useRouter();
+
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -14,14 +19,21 @@ const Login: React.FC = () => {
       method:'Post',
       body:JSON.stringify({email,password}),
     })
-    if(checkData){
-      console.log('sent successfuly');
+    //Id that received from API
+    const res=await checkData.json();
+    const id=res.id;
+    
+    if(id){
+      const id=res.id
+      setId(res);
       
-
+    }
+    else{
+      console.log('incorrect user name and pass');
+      
     }
 
-    console.log('Email:', email);
-    console.log('Password:', password);
+    
   };
 
   const handleRegister = () => {
@@ -33,6 +45,7 @@ const Login: React.FC = () => {
 
   return (
     !showRegister?(
+      id ? <AddLead/>:
       <AdminLayout>
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">

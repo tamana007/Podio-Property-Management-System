@@ -4,7 +4,7 @@ import mongoose,{Schema,Document} from "mongoose";
 //Define an interface representing a document in Mongoose
 
 interface IWebform extends Document{
-  // useId:number;
+  useId:number;
   createdBy:string;
   sellerName:string;
   sellerPhone:number;
@@ -19,7 +19,7 @@ interface IWebform extends Document{
 
 //Define the Schema
  const webformSchema: Schema=new Schema({
-  // userId:{},
+  userId:{type:Number},
   createdBy:{type:String,required:true},
   sellerName:{type:String},
   sellerPhone:{type:Number},
