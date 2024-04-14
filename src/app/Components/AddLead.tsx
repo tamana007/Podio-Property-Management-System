@@ -3,10 +3,12 @@
 import { log } from "console";
 import { response } from "express";
 import { IntegerType } from "mongodb";
-import React, { useEffect, useState } from "react";
+import React, { ReactEventHandler, useEffect, useState } from "react";
 import AdminLayout from "../Components/AdminLayout";
 
 const WebForm: React.FC = () => {
+   
+  
   interface OptionType {
     _id: number;
     username: string;
@@ -40,6 +42,12 @@ const WebForm: React.FC = () => {
   const [allData, setallData] = useState(initialData);
   const [submit,setSubmit]=useState<boolean>(true);
 
+
+ 
+  
+
+ 
+
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -70,6 +78,7 @@ const WebForm: React.FC = () => {
     
     
   };
+
 
   useEffect(() => {
     const getOptions = async () => {
@@ -107,12 +116,11 @@ const WebForm: React.FC = () => {
             className="w-full px-3 py-2 border rounded-md"
             style={{ color: "black" }}
           >
-            <option value="" className="w-full px-3 py-2 border rounded-md">
+            <option value='' className="w-full px-3 py-2 border rounded-md">
               Select your Name
             </option>
             {options.map((option, index) => (
               <option
-                // name='username'
                 key={index}
                 value={option.username}
                 className="text-black"

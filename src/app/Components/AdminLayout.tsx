@@ -1,6 +1,8 @@
 // src/components/AdminLayout.tsx
 
 import React, { ReactNode } from 'react';
+import { ToastContainer } from 'react-toastify';
+import '@/app/customeToast.css'
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -59,6 +61,27 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           {/* Display Children Components */}
           {children}
         </div>
+      </div>
+      {/* <ToastContainer /> */}
+      <div style={{ position: 'fixed', top: '10%', left: '50%', transform: 'translateX(-50%)', zIndex: 9999 }}>
+        <ToastContainer
+          position="top-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          toastStyle={{
+            background: 'white',
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+            borderRadius: '4px', // Add border radius for rounded corners
+            padding: '8px 16px', // Adjust padding to reduce height
+            fontSize: '10px', // Adjust font size
+          }}
+        />
       </div>
     </div>
   );

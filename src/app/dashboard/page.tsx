@@ -1,6 +1,6 @@
 // pages/Dashboard.tsx
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import AdminLayout from "@/app/Components/AdminLayout";
 import { FiPaperclip } from "react-icons/fi";
 
@@ -20,73 +20,62 @@ const Page: React.FC = () => {
 
   const [lead, setLead] = useState<DataType[]>([]);
   const [selectedLead, setSelectedLead] = useState<DataType | null>(null);
-  // const fileInputRef=useRef("");
+  const [comment,setComment]=useState<string>('')
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleLeadClick = (leadItem: DataType) => {
     setSelectedLead(leadItem);
   };
 
-  // const handleAttachmentClick=()=>{
-  //   fileInputRef.current.click();
-  // }
+  const commentFunc=(e:React.ChangeEvent<HTMLTextAreaElement>)=>{
+    setComment(e.target.value)
+    console.log('coment..',comment);
+    
+
+  }
+
   const handleAttachmentClick = () => {
     fileInputRef.current?.click();
-    console.log("clicked");
+    console.log("uploading..");
   };
-  //  <svg
-  //           xmlns="http://www.w3.org/2000/svg"
-  //           className="h-6 w-6 text-gray-600 cursor-pointer hover:text-gray-900"
-  //           fill="none"
-  //           viewBox="0 0 24 24"
-  //           stroke="currentColor"
-  //         >
-  //           <path
-  //             strokeLinecap="round"
-  //             strokeLinejoin="round"
-  //             strokeWidth={2}
-  //             d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-  //           />
-  //         </svg>
+
+  const handleShare = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("share btn clicked");
+  };
+
   useEffect(() => {
     const toFetch = async () => {
       const fetchLead = await fetch(`/api/dashboard`);
       const res = await fetchLead.json();
       const finalResult = res.leads;
-      console.log("res-------------", res);
-      console.log("res.lead==========================", res.leads);
+      // console.log("res-------------", res);
+      // console.log("res.lead==========================", res.leads);
 
       setLead(finalResult);
-      // setLead((prev)=>({...prev,res}))
-      // setLead((prev)=>({...prev,finalResult}))
-      console.log(
-        "leaddddd deted--------------------------------------------",
-        lead
-      );
-      console.log(typeof lead);
+    
     };
     toFetch();
   }, []);
 
   return (
     <AdminLayout>
-      {/* Page Content */}
-      {/* <div>
-       */}
-
       <div className="flex h-screen bg-gray-100">
         {/* Left Section */}
         <div className="w-1/2 p-4 border-r">
           {selectedLead && (
             <div className="bg-white rounded-lg shadow-md p-6 text-black">
-              <form className="flex-col">
+              <form
+                className="flex-col"
+                onSubmit={handleShare}
+              >
                 <textarea
+                onChange={(e)=>{commentFunc(e)}}
+                value={comment}
                   placeholder="Enter your comment..."
                   className="w-full h-8 rounded-md border border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   name="comment"
-                >
-                
-                </textarea>
+                ></textarea>
                 <div className="flex justify-between mb-4 mt-4">
                   <input
                     type="file"
@@ -100,6 +89,7 @@ const Page: React.FC = () => {
                     onClick={handleAttachmentClick}
                   />
                   <button
+                    // onClick={handleShare}
                     type="submit"
                     className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-4 rounded-md transition duration-300 mr-2"
                   >

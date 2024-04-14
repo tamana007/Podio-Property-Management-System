@@ -1,0 +1,12 @@
+.Toastify__toast {
+  background-color: #8747ff;
+  color: white;
+  height: 10px;
+  font-size: 16px;
+  padding: 10px 20px;
+  border-radius: 8px;
+}
+
+.Toastify__progress-bar {
+  background-color: white;
+}
