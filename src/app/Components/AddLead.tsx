@@ -71,7 +71,6 @@ const WebForm: React.FC = () => {
         body: JSON.stringify({ allData }),
       });
     } catch (error) {}
-    // console.log("all data how are you", allData);
     setSubmit(!submit);
     console.log('optionssssssssssssss',options);
     console.log('user id',userId);

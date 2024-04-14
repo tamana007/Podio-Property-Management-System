@@ -17,31 +17,55 @@ const Page: React.FC = () => {
     motivation: string;
     idealPrice: number;
   }
+  interface DataTypetwo {
+    commenter: string;
+    time: Date;
+    // comment: string;
+  }
+  const time = new Date();
+
+  const initialComment: DataTypetwo = {
+    commenter: " ",
+    time,
+    // comment: "",
+  };
 
   const [lead, setLead] = useState<DataType[]>([]);
   const [selectedLead, setSelectedLead] = useState<DataType | null>(null);
-  const [comment,setComment]=useState<string>('')
+  const [comment, setComment] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [commenter, setCommenter] = useState("user");
+  const [date, setDate] = useState(new Date());
+
 
   const handleLeadClick = (leadItem: DataType) => {
     setSelectedLead(leadItem);
   };
 
-  const commentFunc=(e:React.ChangeEvent<HTMLTextAreaElement>)=>{
-    setComment(e.target.value)
-    console.log('coment..',comment);
-    
-
-  }
+  const commentFunc = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setComment(e.target.value);
+    // console.log("coment..", comment);
+  };
 
   const handleAttachmentClick = () => {
     fileInputRef.current?.click();
-    console.log("uploading..");
+    // console.log("uploading..", comment);
   };
 
-  const handleShare = (e: React.FormEvent) => {
+  const handleShare = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("share btn clicked");
+    try {
+      const sendComment = await fetch("/api/comment", {
+        method: "POST",
+        body: JSON.stringify({ commenter,time,comment}),
+      });
+      const res = await sendComment.json();
+      console.log("result received", res);
+
+      console.log(comment, "share btn clicked...........", comment);
+    } catch (error) {
+      console.log("errerrr", error);
+    }
   };
 
   useEffect(() => {
@@ -53,7 +77,6 @@ const Page: React.FC = () => {
       // console.log("res.lead==========================", res.leads);
 
       setLead(finalResult);
-    
     };
     toFetch();
   }, []);
@@ -65,13 +88,12 @@ const Page: React.FC = () => {
         <div className="w-1/2 p-4 border-r">
           {selectedLead && (
             <div className="bg-white rounded-lg shadow-md p-6 text-black">
-              <form
-                className="flex-col"
-                onSubmit={handleShare}
-              >
+              <form className="flex-col" onSubmit={handleShare}>
                 <textarea
-                onChange={(e)=>{commentFunc(e)}}
-                value={comment}
+                  onChange={(e) => {
+                    commentFunc(e);
+                  }}
+                  value={comment}
                   placeholder="Enter your comment..."
                   className="w-full h-8 rounded-md border border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   name="comment"
