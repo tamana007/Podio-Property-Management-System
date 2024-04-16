@@ -6,6 +6,8 @@ import { FiPaperclip } from "react-icons/fi";
 
 const Page: React.FC = () => {
   interface DataType {
+    _id: number;
+    mleadId:number;
     createdBy: string;
     sellerName: string;
     sellerPhone: number;
@@ -20,26 +22,31 @@ const Page: React.FC = () => {
   interface DataTypetwo {
     commenter: string;
     time: Date;
-    // comment: string;
+    comment: string;
+    leadId: Number;
   }
-  const time = new Date();
 
-  const initialComment: DataTypetwo = {
-    commenter: " ",
-    time,
-    // comment: "",
-  };
+  
 
   const [lead, setLead] = useState<DataType[]>([]);
   const [selectedLead, setSelectedLead] = useState<DataType | null>(null);
+  const [mleadId, setmLeadId] = useState<number | null>(null);
   const [comment, setComment] = useState("");
+  const [fetchComments, setFetchComment] = useState<DataTypetwo[] | null>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [commenter, setCommenter] = useState("user");
-  const [date, setDate] = useState(new Date());
+  const [time, setTime] = useState(new Date());
 
 
   const handleLeadClick = (leadItem: DataType) => {
     setSelectedLead(leadItem);
+    //I want to access lead ID So that store as LeadId for comment Table
+    setmLeadId(leadItem.mleadId);
+    // setCommenter(leadItem.createdBy)
+    // console.log('mlead id',leadId);
+    // console.log('leads from db',lead);
+    
+    
   };
 
   const commentFunc = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -52,17 +59,39 @@ const Page: React.FC = () => {
     // console.log("uploading..", comment);
   };
 
-  const handleShare = async (e: React.FormEvent) => {
+  //Fetch all comments from API..................
+  const fetchComment = async () => {
+    try {
+      const response = await fetch("/api/comment");
+      if (response.ok) {
+        const result = await response.json();
+        console.log("all comments receieved--", result);
+        setFetchComment(result);
+      } else {
+        console.error("Failed to fetch comments:", response.statusText);
+      }
+    } catch (error) {
+      console.log("error receiving comments", error);
+    }
+
+  };
+  //Send Comment to API
+  const handleShare = async (e: React.FormEvent,) => {
     e.preventDefault();
     try {
       const sendComment = await fetch("/api/comment", {
         method: "POST",
-        body: JSON.stringify({ commenter,time,comment}),
+        body: JSON.stringify({ commenter, time, comment ,mleadId}),
       });
       const res = await sendComment.json();
-      console.log("result received", res);
+      if (res.ok) {
+        console.log("result received", res);
+        console.log(fetchComments, "fetched comentsssssssssssss");
+        fetchComment();
+        setComment("");
+      }
 
-      console.log(comment, "share btn clicked...........", comment);
+      // console.log(comment, "share btn clicked...........", comment);
     } catch (error) {
       console.log("errerrr", error);
     }
@@ -74,11 +103,17 @@ const Page: React.FC = () => {
       const res = await fetchLead.json();
       const finalResult = res.leads;
       // console.log("res-------------", res);
-      // console.log("res.lead==========================", res.leads);
+      console.log("res.lead==========================", res.leads.mleadId);
 
       setLead(finalResult);
     };
     toFetch();
+  }, []);
+
+  useEffect(() => {
+    fetchComment();
+
+    
   }, []);
 
   return (
@@ -87,47 +122,62 @@ const Page: React.FC = () => {
         {/* Left Section */}
         <div className="w-1/2 p-4 border-r">
           {selectedLead && (
-            <div className="bg-white rounded-lg shadow-md p-6 text-black">
-              <form className="flex-col" onSubmit={handleShare}>
-                <textarea
-                  onChange={(e) => {
-                    commentFunc(e);
-                  }}
-                  value={comment}
-                  placeholder="Enter your comment..."
-                  className="w-full h-8 rounded-md border border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                  name="comment"
-                ></textarea>
-                <div className="flex justify-between mb-4 mt-4">
-                  <input
-                    type="file"
-                    id="fileInput"
-                    style={{ display: "none" }}
-                    ref={fileInputRef}
-                  />
-                  <FiPaperclip
-                    className="text-gray-600 cursor-pointer hover:text-gray-900"
-                    size={24}
-                    onClick={handleAttachmentClick}
-                  />
-                  <button
-                    // onClick={handleShare}
-                    type="submit"
-                    className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-4 rounded-md transition duration-300 mr-2"
-                  >
-                    Share
-                  </button>
-                  {/* <div className="absolute bottom-0 right-0 flex items-center"> */}
-                </div>
-              </form>
-              <h2 className="text-xl font-semibold mb-4">Lead Details</h2>
+            <>
+              <div className="bg-white rounded-lg shadow-md p-6 text-black">
+                <form className="flex-col" onSubmit={handleShare}>
+                  <textarea
+                    onChange={(e) => {
+                      commentFunc(e);
+                    }}
+                    value={comment}
+                    placeholder="Enter your comment..."
+                    className="w-full h-8 rounded-md border border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    name="comment"
+                  ></textarea>
+                  <div className="flex justify-between mb-4 mt-4">
+                    <input
+                      type="file"
+                      id="fileInput"
+                      style={{ display: "none" }}
+                      ref={fileInputRef}
+                    />
+                    <FiPaperclip
+                      className="text-gray-600 cursor-pointer hover:text-gray-900"
+                      size={24}
+                      onClick={handleAttachmentClick}
+                    />
+                    <button
+                      // onClick={handleShare}
+                      type="submit"
+                      className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-4 rounded-md transition duration-300 mr-2"
+                    >
+                      Share
+                    </button>
+                    {/* <div className="absolute bottom-0 right-0 flex items-center"> */}
+                  </div>
+                </form>
+                <h2 className="text-xl font-semibold mb-4">Lead Details</h2>
 
-              <p>CreatedBy: {selectedLead.createdBy}</p>
-              <p>Location: {selectedLead.address}</p>
-              <p>SellerName: {selectedLead.sellerName}</p>
+                <p>CreatedBy: {selectedLead.createdBy}</p>
+                <p>Location: {selectedLead.address}</p>
+                <p>SellerName: {selectedLead.sellerName}</p>
 
-              {/* Display other details here */}
-            </div>
+                {/* Display other details here */}
+                {/* <div> other details goes here</div> */}
+              </div>
+              <div className="bg-white rounded-lg shadow-md p-6 text-black mt-5">
+                <p>Show All Comments:</p>
+                {fetchComments.map((item, index) => (
+                  <div className="bg-white rounded-lg shadow-md p-6 text-black mt-5">
+                    <div key={index} className="flex">
+                      <p className="mr-20">{item.commenter}</p>
+                      <p>{new Date(item.time).toLocaleString()}</p>
+                    </div>
+                    <p> {item.comment}</p>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
         {/* Right Section */}
@@ -164,6 +214,7 @@ const Page: React.FC = () => {
                 <h2 className="text-xl font-semibold mb-4">
                   Count {item.createdBy}
                 </h2>
+                <h2>leadId {item.mleadId}</h2>
               </div>
             </div>
           ))}

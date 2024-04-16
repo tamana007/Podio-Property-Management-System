@@ -6,6 +6,7 @@ interface IComments extends Document {
   commenter: string;
   time: Date;
   comment: string;
+  mleadId:Number;
 }
 
 //Define Schema
@@ -14,6 +15,7 @@ const commentSchema: Schema = new Schema({
   commenter: { type: String ,default:"user"},
   time: { type: Date, default:Date.now },
   comment: { type: String },
+  mleadId:{type:Number},
 });
 
 

@@ -1,24 +1,19 @@
-import {connectToDatabase} from '@/db/model/db'
-// import WebForm from '@/app/webform/page'
-// import WebForm from '@/db/model/User';
-import Webform from '@/db/model/Webform';
-import { NextRequest,NextResponse } from 'next/server'
+import { connectToDatabase } from "@/db/model/db";
+import Webform from "@/db/model/Webform";
+import { NextRequest, NextResponse } from "next/server";
 
-export const POST=async(request: NextRequest)=>{
+export const POST = async (request: NextRequest) => {
   await connectToDatabase();
-  const data=await request.json();
-  const webform=data.allData;
+  const data = await request.json();
 
+  try {
+    const sendtoDb = await new Webform(data).save();
 
-  const sendtoDb=await new Webform(webform).save()
-
-  if(sendtoDb){
-    console.log('sendt to db-------------------------------------',sendtoDb);
-    
+    if (sendtoDb) {
+      console.log(" Suceed sendt to db-------------------------------------");
+    }
+  } catch (error) {
+    console.log("error", error);
   }
-  console.log('sepecifis data',webform);
-  
-  // console.log('------------------------data',data);
-  return NextResponse.json({message:"done"},{status:200})
- 
-}
+  return NextResponse.json({ message: "done" }, { status: 200 });
+};
