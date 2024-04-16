@@ -36,10 +36,17 @@ const Page: React.FC = () => {
   const [time, setTime] = useState(new Date());
 
   const handleLeadClick = (leadItem: DataType) => {
-    setSelectedLead(leadItem);
-    setmLeadId(leadItem.mleadId);
 
-    fetchComment(leadItem.mleadId)
+    if (leadItem && leadItem.mleadId) {
+      setSelectedLead(leadItem);
+      setmLeadId(leadItem.mleadId); // Set mleadId when lead is clicked
+    } else {
+      console.error("Invalid leadItem:", leadItem);
+    }
+    // setSelectedLead(leadItem);
+    // setmLeadId(leadItem.mleadId);
+
+    fetchComment(leadItem.mleadId);
   };
 
   const commentFunc = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -53,9 +60,9 @@ const Page: React.FC = () => {
   };
 
   //Fetch all comments from API..................
-  const fetchComment = async (mleadId:Number) => {
+  const fetchComment = async (mleadId: Number) => {
     try {
-      const response = await fetch(`/api/comment?id=${mleadId}`)
+      const response = await fetch(`/api/comment?id=${mleadId}`);
       if (response.ok) {
         const result = await response.json();
         console.log("Comments for mleadId", mleadId, ":", result);
@@ -67,45 +74,43 @@ const Page: React.FC = () => {
     } catch (error) {
       console.log("error receiving comments", error);
     }
-
   };
-  //Send Comment to API
+  //Send Comments to API
   const handleShare = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      if (!mleadId) {
+        console.error("mleadId is not set");
+        return;
+      }
       const sendComment = await fetch("/api/comment", {
         method: "POST",
         body: JSON.stringify({ commenter, time, comment, mleadId }),
       });
       const res = await sendComment.json();
+      setComment("");
+      console.log('coment after getting empty',comment);
+fetchComment(mleadId)
+
       if (res.ok) {
         console.log("result received", res);
         console.log(fetchComments, "fetched comentsssssssssssss");
-        // fetchComment(leadItem.mleadId);
-        setComment("");
+        
       }
-
-      // console.log(comment, "share btn clicked...........", comment);
     } catch (error) {
       console.log("errerrr", error);
     }
   };
 
+  //Fetch All leads on the left side....
   useEffect(() => {
     const toFetch = async () => {
       const fetchLead = await fetch(`/api/dashboard`);
       const res = await fetchLead.json();
       const finalResult = res.leads;
-      // console.log("res-------------", res);
-      console.log("res.lead==========================", res.leads.mleadId);
-
       setLead(finalResult);
     };
     toFetch();
-  }, []);
-
-  useEffect(() => {
-    // fetchComment(selectedLead.mleadId);
   }, []);
 
   return (
