@@ -7,7 +7,7 @@ import { FiPaperclip } from "react-icons/fi";
 const Page: React.FC = () => {
   interface DataType {
     _id: number;
-    mleadId:number;
+    mleadId: number;
     createdBy: string;
     sellerName: string;
     sellerPhone: number;
@@ -26,8 +26,6 @@ const Page: React.FC = () => {
     leadId: Number;
   }
 
-  
-
   const [lead, setLead] = useState<DataType[]>([]);
   const [selectedLead, setSelectedLead] = useState<DataType | null>(null);
   const [mleadId, setmLeadId] = useState<number | null>(null);
@@ -37,16 +35,11 @@ const Page: React.FC = () => {
   const [commenter, setCommenter] = useState("user");
   const [time, setTime] = useState(new Date());
 
-
   const handleLeadClick = (leadItem: DataType) => {
     setSelectedLead(leadItem);
-    //I want to access lead ID So that store as LeadId for comment Table
     setmLeadId(leadItem.mleadId);
-    // setCommenter(leadItem.createdBy)
-    // console.log('mlead id',leadId);
-    // console.log('leads from db',lead);
-    
-    
+
+    fetchComment(leadItem.mleadId)
   };
 
   const commentFunc = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -60,12 +53,13 @@ const Page: React.FC = () => {
   };
 
   //Fetch all comments from API..................
-  const fetchComment = async () => {
+  const fetchComment = async (mleadId:Number) => {
     try {
-      const response = await fetch("/api/comment");
+      const response = await fetch(`/api/comment?id=${mleadId}`)
       if (response.ok) {
         const result = await response.json();
-        console.log("all comments receieved--", result);
+        console.log("Comments for mleadId", mleadId, ":", result);
+        // console.log("all comments receieved--", result);
         setFetchComment(result);
       } else {
         console.error("Failed to fetch comments:", response.statusText);
@@ -76,18 +70,18 @@ const Page: React.FC = () => {
 
   };
   //Send Comment to API
-  const handleShare = async (e: React.FormEvent,) => {
+  const handleShare = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const sendComment = await fetch("/api/comment", {
         method: "POST",
-        body: JSON.stringify({ commenter, time, comment ,mleadId}),
+        body: JSON.stringify({ commenter, time, comment, mleadId }),
       });
       const res = await sendComment.json();
       if (res.ok) {
         console.log("result received", res);
         console.log(fetchComments, "fetched comentsssssssssssss");
-        fetchComment();
+        // fetchComment(leadItem.mleadId);
         setComment("");
       }
 
@@ -111,9 +105,7 @@ const Page: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    fetchComment();
-
-    
+    // fetchComment(selectedLead.mleadId);
   }, []);
 
   return (
