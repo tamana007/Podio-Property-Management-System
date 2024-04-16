@@ -36,30 +36,24 @@ const Page: React.FC = () => {
   const [time, setTime] = useState(new Date());
 
   const handleLeadClick = (leadItem: DataType) => {
-
     if (leadItem && leadItem.mleadId) {
       setSelectedLead(leadItem);
       setmLeadId(leadItem.mleadId); // Set mleadId when lead is clicked
     } else {
       console.error("Invalid leadItem:", leadItem);
     }
-    // setSelectedLead(leadItem);
-    // setmLeadId(leadItem.mleadId);
-
     fetchComment(leadItem.mleadId);
   };
 
   const commentFunc = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setComment(e.target.value);
-    // console.log("coment..", comment);
   };
 
   const handleAttachmentClick = () => {
     fileInputRef.current?.click();
-    // console.log("uploading..", comment);
   };
 
-  //Fetch all comments from API..................
+  //Fuction to Fetch all comments from API..................
   const fetchComment = async (mleadId: Number) => {
     try {
       const response = await fetch(`/api/comment?id=${mleadId}`);
@@ -75,6 +69,7 @@ const Page: React.FC = () => {
       console.log("error receiving comments", error);
     }
   };
+
   //Send Comments to API
   const handleShare = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,13 +84,14 @@ const Page: React.FC = () => {
       });
       const res = await sendComment.json();
       setComment("");
-      console.log('coment after getting empty',comment);
-fetchComment(mleadId)
+      console.log("coment after getting empty", comment);
+
+      //call the func to fetch by id
+      fetchComment(mleadId);
 
       if (res.ok) {
         console.log("result received", res);
         console.log(fetchComments, "fetched comentsssssssssssss");
-        
       }
     } catch (error) {
       console.log("errerrr", error);
@@ -144,23 +140,19 @@ fetchComment(mleadId)
                       onClick={handleAttachmentClick}
                     />
                     <button
-                      // onClick={handleShare}
                       type="submit"
                       className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-4 rounded-md transition duration-300 mr-2"
                     >
                       Share
                     </button>
-                    {/* <div className="absolute bottom-0 right-0 flex items-center"> */}
                   </div>
                 </form>
                 <h2 className="text-xl font-semibold mb-4">Lead Details</h2>
-
                 <p>CreatedBy: {selectedLead.createdBy}</p>
                 <p>Location: {selectedLead.address}</p>
                 <p>SellerName: {selectedLead.sellerName}</p>
 
                 {/* Display other details here */}
-                {/* <div> other details goes here</div> */}
               </div>
               <div className="bg-white rounded-lg shadow-md p-6 text-black mt-5">
                 <p>Show All Comments:</p>
@@ -177,15 +169,14 @@ fetchComment(mleadId)
             </>
           )}
         </div>
+
+
         {/* Right Section */}
         <div className="w-1/2 p-4">
           <h1 className="text-xl font-semibold mb-4 text-black">
             Leads Created By
           </h1>
           <div className="flex justify-between">
-            {/* <h2 className="text-xl font-semibold mb-4 text-black">
-            Overall Count:
-          </h2> */}
             <h2
               className="text-xl font-semibold mb-4"
               style={{ color: "#7a7575" }}
@@ -199,7 +190,6 @@ fetchComment(mleadId)
               600
             </h2>
           </div>
-
           {lead.map((item, index) => (
             <div
               key={index}
