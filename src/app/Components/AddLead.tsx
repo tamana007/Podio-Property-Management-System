@@ -5,12 +5,31 @@ import { response } from "express";
 import { IntegerType } from "mongodb";
 import React, { ReactEventHandler, useEffect, useState } from "react";
 import AdminLayout from "../Components/AdminLayout";
+import { usePodioStore } from "../podioStore";
+import Dashboard from '@/app/Components/Dashboard'
+
+
+// Define the interface for props in WebForm component
+interface WebFormProps {
+  id: number; // Define id prop with appropriate type
+}
 
 const WebForm: React.FC = () => {
+
+  //I want to add UserName from here to store...
+
+  const podioStore = usePodioStore(); // Use the store
+  console.log('podio store from add lead',podioStore);
+  
+
   interface OptionType {
     _id: number;
     username: string;
   }
+
+  
+  
+
 
   interface DataType {
     mleadId: number;
@@ -53,6 +72,10 @@ const WebForm: React.FC = () => {
       [name]: value,
     }));
     console.log("input chningg", value);
+    podioStore.setUserName(allData.createdBy)
+    console.log('podio store after usernamae added',podioStore);
+    
+
   };
   const [options, setOptions] = useState<OptionType[]>([]);
 
@@ -61,7 +84,7 @@ const WebForm: React.FC = () => {
     let userId = options.map((op) => op._id);
 
     try {
-      const sendData = await fetch("/api/webform", {
+      const sendData = await fetch(`/api/webform?user=${allData.createdBy}`, {
         method: "POST",
         body: JSON.stringify({
           ...allData,
@@ -92,8 +115,9 @@ const WebForm: React.FC = () => {
 
   return (
     <>
-      <AdminLayout>
         {submit ? (
+      <AdminLayout>
+
           <div className="flex justify-center items-center min-h-screen text-black">
             <div className="w-full max-w-4xl p-6 bg-gray-100 rounded-lg">
               <h1 className="text-3xl font-bold mb-6 text-center text-black">
@@ -288,10 +312,12 @@ const WebForm: React.FC = () => {
               </div>
             </div>
           </div>
-        ) : (
-          <div>submitted</div>
-        )}
       </AdminLayout>
+
+        ) : (
+          // <div>submitted</div>
+          <Dashboard/>
+        )}
     </>
   );
 };

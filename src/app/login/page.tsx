@@ -4,8 +4,10 @@ import React, { useState } from "react";
 import Register from "@/app/Components/Register";
 import AdminLayout from "../Components/AdminLayout";
 import AddLead from "@/app/Components/AddLead";
+import WebForm from "@/app/Components/AddLead";
 import WrongCredentials from "../Components/WrongCredentials";
 import { ToastContainer, toast } from 'react-toastify';
+import { usePodioStore } from "../podioStore";
 // import 'react-toastify/dist/ReactToastify.css';
 // import { useRouter } from 'next/router';
 
@@ -15,8 +17,12 @@ const Login: React.FC = () => {
   const [showRegister, setShowRegister] = useState(false);
   const [id, setId] = useState<Number>();
   
- 
+  const podioStore = usePodioStore(); // Use the store
+  // console.log('pdio store in login page',podioStore);
   
+  
+
+
   const showToast = () => {
    toast.error('Wrong email or password', {
     position: 'top-right',
@@ -40,16 +46,21 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    const checkData = await fetch("/api/login", {
+
+    const checkData = await fetch(`/api/login?email=${email}`, {
       method: "Post",
       body: JSON.stringify({ email, password }),
     });
+    podioStore.setEmail(email); // Set the email in the store
+ 
 
     //If checkData exist 
     if(checkData.ok){
+      // console.log(podioStore,'podio storeeee.........................');
+      
     //Id that received from API
     const res = await checkData.json();
-    console.log('res',res);
+    // console.log('res',res);
     
     const id = res.id;
     setId(id);
@@ -89,7 +100,7 @@ const Login: React.FC = () => {
   };
 
   return !showRegister ? (
-    id ? <AddLead /> : id === null ? <WrongCredentials /> : (
+    id ? <WebForm /> : id === null ? <WrongCredentials /> : (
       <AdminLayout>
         <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-md w-full space-y-8">
@@ -187,9 +198,6 @@ const Login: React.FC = () => {
   ) : (
     <Register />
   );
-  // {
-  //   id === null && <WrongCredentials />
-  // }
 };
 
 export default Login;

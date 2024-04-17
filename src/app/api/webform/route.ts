@@ -5,6 +5,10 @@ import { NextRequest, NextResponse } from "next/server";
 export const POST = async (request: NextRequest) => {
   await connectToDatabase();
   const data = await request.json();
+  // const url=new URL(request.url);
+  // const user=url.searchParams.get("createdBy")
+  // console.log('user from add lead detected',user);
+  
 
   try {
     const sendtoDb = await new Webform(data).save();
