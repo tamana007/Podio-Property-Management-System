@@ -53,6 +53,7 @@ const Page: React.FC = () => {
     if (leadItem && leadItem.mleadId) {
       setSelectedLead(leadItem);
       setmLeadId(leadItem.mleadId); // Set mleadId when lead is clicked
+      setCommenter(extractBeforeAt(email))
       podioStore.setEmail(email);
       
     } else {
@@ -78,6 +79,8 @@ const Page: React.FC = () => {
       if (response.ok) {
         const result = await response.json();
         console.log("Comments for mleadId", mleadId, ":", result);
+        console.log('commenter----------',result.commenter);
+        
         // console.log("all comments receieved--", result);
         setFetchComment(result);
       } else {
@@ -129,7 +132,7 @@ const Page: React.FC = () => {
 
   return (
     <AdminLayout>
-      <div className="flex h-screen bg-gray-100">
+      <div className=" flex bg-gray-100 ">
         {/* Left Section */}
         <div className="w-1/2 p-4 border-r">
           {selectedLead && (
@@ -177,7 +180,7 @@ const Page: React.FC = () => {
                 {fetchComments.map((item, index) => (
                   <div className="bg-white rounded-lg shadow-md p-6 text-black mt-5">
                     <div key={index} className="flex">
-                      <p className="mr-20">{extractBeforeAt(email)}</p>
+                      <p className="mr-20">{item.commenter}</p>
                       <p>{formatTimeAgo(new Date(item.time).toLocaleString())}</p>
                     </div>
                     <p> {item.comment}</p>
@@ -216,9 +219,9 @@ const Page: React.FC = () => {
             >
               <div className="flex justify-between">
                 <h2 className="text-xl font-semibold mb-4">{item.createdBy}</h2>
-                <h2 className="text-xl font-semibold mb-4">
+                {/* <h2 className="text-xl font-semibold mb-4">
                   Count {item.createdBy}
-                </h2>
+                </h2> */}
                 <h2>leadId {item.mleadId}</h2>
               </div>
             </div>

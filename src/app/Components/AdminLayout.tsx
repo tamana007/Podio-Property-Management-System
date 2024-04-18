@@ -10,36 +10,36 @@ interface AdminLayoutProps {
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   return (
-    <div className="flex h-screen">
+    <div className=" flex" >
       {/* Sidebar */}
-      <div className="w-64 bg-gray-800 text-white">
+      <div className="w-64 bg-teal-800 text-white ">
         {/* Sidebar Content */}
         <div className="p-4">
           <h1 className="text-xl font-semibold">Admin Panel</h1>
           <ul className="mt-4">
             {/* Sidebar Links */}
             <li className="mb-2">
-              <a href='/register' className="block py-2 px-4 bg-gray-700 hover:bg-gray-600 rounded">
+              <a href='/register' className="block py-2 px-4 bg-teal-700 hover:bg-teal-600 rounded">
                 Register
               </a>
             </li>
             <li className="mb-2">
-              <a href='/login' className="block py-2 px-4 bg-gray-700 hover:bg-gray-600 rounded">
+              <a href='/login' className="block py-2 px-4 bg-teal-700 hover:bg-teal-600 rounded">
                 Login
               </a>
             </li>
             <li className="mb-2">
-              <a href="./webform" className="block py-2 px-4 bg-gray-700 hover:bg-gray-600 rounded">
+              <a href="./webform" className="block py-2 px-4 bg-teal-700 hover:bg-teal-600 rounded">
                 Add Lead
               </a>
             </li>
             <li className="mb-2">
-              <a href='/dashboard' className="block py-2 px-4 bg-gray-700 hover:bg-gray-600 rounded">
+              <a href='/dashboard' className="block py-2 px-4 bg-teal-700 hover:bg-teal-600 rounded">
                 Dashboard
               </a>
             </li>
             <li className="mb-2">
-              <a href="#" className="block py-2 px-4 bg-gray-700 hover:bg-gray-600 rounded">
+              <a href="#" className="block py-2 px-4 bg-teal-700 hover:bg-teal-600 rounded">
                 Properties
               </a>
             </li>
@@ -50,14 +50,16 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1">
+      {/* <div className="h-screen flex-1 overflow-y-auto"> */}
+      <div className="h-screen flex-1 overflow-y-auto bg-gray-200">
+
         {/* Page Header */}
-        <div className="bg-gray-200 p-4">
-          <h2 className="text-xl font-semibold text-black">TEXAS PROPMOVER LLC LEADS</h2>
+        <div className="bg-teal-800 p-4 ">
+          <h2 className="text-xl font-semibold text-white">TEXAS PROPMOVER LLC LEADS</h2>
         </div>
 
         {/* Page Content */}
-        <div className="p-4">
+        <div>
           {/* Display Children Components */}
           {children}
         </div>

@@ -118,7 +118,8 @@ const WebForm: React.FC = () => {
         {submit ? (
       <AdminLayout>
 
-          <div className="flex justify-center items-center min-h-screen text-black">
+          {/* <div className="flex justify-center items-center min-h-screen text-black"> */}
+          <div className="flex justify-center items-center h-full text-black">
             <div className="w-full max-w-4xl p-6 bg-gray-100 rounded-lg">
               <h1 className="text-3xl font-bold mb-6 text-center text-black">
                 Texas Propmover LLC LEADS
