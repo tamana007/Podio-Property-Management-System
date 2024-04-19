@@ -3,21 +3,16 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import AdminLayout from "@/app/Components/AdminLayout";
 import { FiPaperclip } from "react-icons/fi";
+import { FiMapPin } from "react-icons/fi";
 import { usePodioStore } from "../podioStore";
 import { formatTimeAgo } from "../helpingFunctions/formatTimeAgo";
-// import { extractBeforeAt } from "../helpingFunctions/formatTimeAgo";
 import { extractBeforeAt } from "../helpingFunctions/extractBeforeAt";
 
-// import {extractBeforeAt} from "@../hel"
-
 const Page: React.FC = () => {
-
-  const podioStore=usePodioStore()
+  const podioStore = usePodioStore();
   const { email } = usePodioStore(); // Access the email from the store
 
-  console.log('Email from store:', podioStore);
-
-
+  console.log("Email from store:", podioStore);
 
   interface DataType {
     _id: number;
@@ -49,13 +44,15 @@ const Page: React.FC = () => {
   const [commenter, setCommenter] = useState("user");
   const [time, setTime] = useState(new Date());
 
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
+
   const handleLeadClick = (leadItem: DataType) => {
     if (leadItem && leadItem.mleadId) {
       setSelectedLead(leadItem);
       setmLeadId(leadItem.mleadId); // Set mleadId when lead is clicked
-      setCommenter(extractBeforeAt(email))
+      setCommenter(extractBeforeAt(email));
       podioStore.setEmail(email);
-      
     } else {
       console.error("Invalid leadItem:", leadItem);
     }
@@ -70,8 +67,6 @@ const Page: React.FC = () => {
     fileInputRef.current?.click();
   };
 
-
-
   //Fuction to Fetch all comments from API..................
   const fetchComment = async (mleadId: Number) => {
     try {
@@ -79,8 +74,8 @@ const Page: React.FC = () => {
       if (response.ok) {
         const result = await response.json();
         console.log("Comments for mleadId", mleadId, ":", result);
-        console.log('commenter----------',result.commenter);
-        
+        console.log("commenter----------", result.commenter);
+
         // console.log("all comments receieved--", result);
         setFetchComment(result);
       } else {
@@ -119,6 +114,63 @@ const Page: React.FC = () => {
     }
   };
 
+  const handleShareLocation = () => {
+    // Open Google Maps in a new tab
+    const googleMapsUrl = "https://www.google.com/maps";
+    const googleMapsTab = window.open(googleMapsUrl, "_blank");
+  
+    // Listen for changes to the URL hash of the Google Maps tab
+    const urlChangeListener = () => {
+      console.log('went to page maps');
+      if (googleMapsTab) {
+        console.log('URL CHANGE LISTENED----');
+        const googleMapsUrl = googleMapsTab.location.href;
+        // Extract latitude and longitude from the Google Maps URL
+        const match = googleMapsUrl.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+        if (match) {
+          const newLatitude = parseFloat(match[1]);
+          const newLongitude = parseFloat(match[2]);
+  
+          console.log("latititude", newLatitude);
+          console.log("longtitude", newLongitude);
+  
+          // Set the latitude and longitude in state
+          setLatitude(newLatitude);
+          setLongitude(newLongitude);
+  
+          // Close the Google Maps tab
+          googleMapsTab.close();
+        }
+      }
+    };
+  
+    // Listen for changes to the URL hash of the Google Maps tab
+    window.addEventListener("hashchange", urlChangeListener);
+  
+    // Close the event listener when the Google Maps tab is closed
+    if (googleMapsTab) {
+      googleMapsTab.onbeforeunload = () => {
+        window.removeEventListener("hashchange", urlChangeListener);
+      };
+    }
+  };
+  
+  // Function to store the coordinates in the database
+  const storeCoordinatesInDB = () => {
+    // Check if latitude and longitude are not null
+    if (latitude !== null && longitude !== null) {
+      // Perform your logic to store the coordinates in the database
+      console.log("Storing coordinates in database:", latitude, longitude);
+    } else {
+      console.error("Latitude or longitude is null");
+    }
+  };
+
+  useEffect(() => {
+    // Call the function to store coordinates in the database
+    storeCoordinatesInDB();
+  }, [latitude, longitude]);
+
   //Fetch All leads on the left side....
   useEffect(() => {
     const toFetch = async () => {
@@ -156,19 +208,37 @@ const Page: React.FC = () => {
                       ref={fileInputRef}
                     />
                     <FiPaperclip
-                      className="text-gray-600 cursor-pointer hover:text-gray-900"
+                      className="text-teal-600 cursor-pointer hover:text-gray-900"
                       size={24}
                       onClick={handleAttachmentClick}
                     />
+                    <FiMapPin
+                      className="text-teal-600 cursor-pointer hover:text-gray-900 ml-2"
+                      size={24}
+                      onClick={handleShareLocation} // Add onClick handler if needed
+                    />
+                    <button onClick={handleShareLocation}>
+                      Share Location
+                    </button>
+                    {latitude !== null && longitude !== null && (
+                      <p>
+                        Latitude: {latitude}, Longitude: {longitude}
+                      </p>
+                    )}
                     <button
                       type="submit"
-                      className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-4 rounded-md transition duration-300 mr-2"
+                      className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-1 px-4 rounded-md transition duration-300 mr-2"
                     >
-                      Share
+                      Post
                     </button>
                   </div>
                 </form>
                 <h2 className="text-xl font-semibold mb-4">Lead Details</h2>
+                {latitude !== null && longitude !== null && (
+                  <p>
+                    Latitude: {latitude}, Longitude: {longitude}
+                  </p>
+                )}
                 <p>CreatedBy: {selectedLead.createdBy}</p>
                 <p>Location: {selectedLead.address}</p>
                 <p>SellerName: {selectedLead.sellerName}</p>
@@ -181,7 +251,9 @@ const Page: React.FC = () => {
                   <div className="bg-white rounded-lg shadow-md p-6 text-black mt-5">
                     <div key={index} className="flex">
                       <p className="mr-20">{item.commenter}</p>
-                      <p>{formatTimeAgo(new Date(item.time).toLocaleString())}</p>
+                      <p>
+                        {formatTimeAgo(new Date(item.time).toLocaleString())}
+                      </p>
                     </div>
                     <p> {item.comment}</p>
                   </div>
@@ -190,7 +262,6 @@ const Page: React.FC = () => {
             </>
           )}
         </div>
-
 
         {/* Right Section */}
         <div className="w-1/2 p-4">

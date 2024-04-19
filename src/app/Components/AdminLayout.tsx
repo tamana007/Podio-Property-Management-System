@@ -2,7 +2,8 @@
 
 import React, { ReactNode } from 'react';
 import { ToastContainer } from 'react-toastify';
-import '@/app/customeToast.css'
+import '@/app/customeToast.css';
+import Head from 'next/head';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -10,6 +11,14 @@ interface AdminLayoutProps {
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   return (
+    <>
+      <Head>
+        <script
+          src={`https://maps.googleapis.com/maps/api/js?key=AIzaSyByebbhLZ-w8EcqWuTozv1Dys-fLC0zEU0&libraries=places`}
+          async
+          defer
+        ></script>
+      </Head>
     <div className=" flex" >
       {/* Sidebar */}
       <div className="w-64 bg-teal-800 text-white ">
@@ -29,12 +38,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               </a>
             </li>
             <li className="mb-2">
-              <a href="./webform" className="block py-2 px-4 bg-teal-700 hover:bg-teal-600 rounded">
+              <a href="#" className="block py-2 px-4 bg-teal-700 hover:bg-teal-600 rounded">
                 Add Lead
               </a>
             </li>
             <li className="mb-2">
-              <a href='/dashboard' className="block py-2 px-4 bg-teal-700 hover:bg-teal-600 rounded">
+              <a href='#' className="block py-2 px-4 bg-teal-700 hover:bg-teal-600 rounded">
                 Dashboard
               </a>
             </li>
@@ -86,6 +95,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         />
       </div>
     </div>
+    </>
   );
 };
 
