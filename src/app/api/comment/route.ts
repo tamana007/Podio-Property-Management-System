@@ -8,7 +8,7 @@ export const POST = async (req: NextRequest) => {
   await connectToDatabase();
   //Attention here must be req.json not req.body----
   const commentresult = await req.json();
-  // console.log("req------------------------", comment);
+
 
   console.log("coment receive to api", commentresult);
 
@@ -18,9 +18,8 @@ export const POST = async (req: NextRequest) => {
     time: commentresult.time || new Date(), // Set default time if not provided
     comment: commentresult.comment,
     mleadId: commentresult.mleadId,
-    // mleadId:commentresult.mleadId,
   });
-  // console.log("coment receive to ap new000000000000000000i", newComment);
+ 
 
   // connectToDatabase
   const savetoDb = await newComment.save();
@@ -35,23 +34,14 @@ export const POST = async (req: NextRequest) => {
 // GET endpoint to retrieve all comments
 export const GET = async (req: NextRequest) => {
   await connectToDatabase();
-
-  // const {mleadId}=await req.body.json()
-  // const res =await  req.body.json();
   const url = new URL( req.url);
   const id=url.searchParams.get("id")
-  
-  // console.log('gotten id..........................................',url);
-  // console.log('id--------------',id);
-  
+
   
 
   try {
     // Retrieve all comments from the database
     const comments = await Comment.find({mleadId:id});
-
-    // Return success response with comments
-    // console.log("Retrieved comments from database:", comments);
     return NextResponse.json(comments);
   } catch (error) {
     // Return error response

@@ -8,6 +8,14 @@ import Head from 'next/head';
 interface AdminLayoutProps {
   children: ReactNode;
 }
+declare global {
+  interface Window {
+    google: any;
+  }
+}
+
+// Your component code here
+
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   return (
@@ -43,7 +51,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               </a>
             </li>
             <li className="mb-2">
-              <a href='#' className="block py-2 px-4 bg-teal-700 hover:bg-teal-600 rounded">
+              <a href='./dashboard' className="block py-2 px-4 bg-teal-700 hover:bg-teal-600 rounded">
                 Dashboard
               </a>
             </li>
@@ -53,13 +61,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               </a>
             </li>
            
-            {/* Add more sidebar links as needed */}
           </ul>
         </div>
       </div>
 
       {/* Main Content */}
-      {/* <div className="h-screen flex-1 overflow-y-auto"> */}
       <div className="h-screen flex-1 overflow-y-auto bg-gray-200">
 
         {/* Page Header */}
