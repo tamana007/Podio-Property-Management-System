@@ -22,7 +22,7 @@ export const usePodioStore = create<PodioStore>((set) => ({
   setEmail: (email: string) => set({ email: email }),
   setUserName:(userName:string)=>set({userName:userName}),
   // address: null,
-  setAddress: (address) => set({ address }),
+  setAddress: (address) => set((state)=>({...state, address })),
   // setId:(id:number)=>set({id:id}),
 
 }));

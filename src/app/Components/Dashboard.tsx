@@ -2,7 +2,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import AdminLayout from "@/app/Components/AdminLayout";
 import { FiPaperclip, FiMapPin } from "react-icons/fi";
-import { usePodioStore,setAddress } from "../podioStore";
+import { FaCommentDots } from "react-icons/fa";
+import { BsThreeDots } from "react-icons/bs";
+import { usePodioStore, setAddress } from "../podioStore";
 import { formatTimeAgo } from "../helpingFunctions/formatTimeAgo";
 import { extractBeforeAt } from "../helpingFunctions/extractBeforeAt";
 import GoogleMapContainer from "@/app/Components/GoogleMapContainer";
@@ -45,7 +47,8 @@ const Page: React.FC = () => {
   const [longitude, setLongitude] = useState<number | null>(null);
   const [googleMapLoaded, setGoogleMapLoaded] = useState<boolean>(false);
   const [expand, setExpand] = useState<boolean>(false);
-  const [address,setAddress]=useState<string|null>('CANADA')
+  const [address, setAddress] = useState<string | null>(null);
+  const [allcomments, setAllcomments] = useState<boolean>(false);
 
   const handleLeadClick = (leadItem: DataType) => {
     setSelectedLead(leadItem);
@@ -54,13 +57,10 @@ const Page: React.FC = () => {
     podioStore.setEmail(email);
     fetchComment(leadItem.mleadId);
     // setAddress(selectedLead?.address)
-    setAddress(leadItem.address); 
-    podioStore.setAddress(address)
-    console.log(podioStore,'check addres in podio store');
-    console.log('adress check',address);
-    
-    
-
+    setAddress(leadItem.address);
+    podioStore.setAddress(address);
+    console.log(podioStore, "check addres in podio store");
+    console.log("adress check", address);
   };
 
   const commentFunc = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -151,6 +151,7 @@ const Page: React.FC = () => {
         <div className="w-1/2 p-4 border-r">
           {selectedLead && (
             <>
+              {/* LEFT SECTION */}
               <div className="bg-white rounded-lg shadow-md p-6 text-black">
                 <form className="flex-col" onSubmit={handleShare}>
                   <textarea
@@ -187,57 +188,88 @@ const Page: React.FC = () => {
                   </div>
                 </form>
                 <div className="border border-gray-300 rounded-lg overflow-hidden">
-                <h2 className="text-xl font-semibold mb-4 px-4 py-2 bg-gray-100">Lead Details</h2>
-  <div className="grid grid-cols-2 gap-4 px-4 py-2">
-  <div>
-    <p className="font-semibold">Created By:</p>
-    <p className="font-semibold">Location:</p>
-    <p className="font-semibold">Seller Name:</p>
-    <p className="font-semibold">Seller Phone:</p>
-    <p className="font-semibold">Other Phone:</p>
-    <p className="font-semibold">Seller Email:</p>
-    <p className="font-semibold">Other Email:</p>
-    <p className="font-semibold">Address:</p>
-    <p className="font-semibold">Note:</p>
-    <p className="font-semibold">Motivation:</p>
-    <p className="font-semibold">Ideal Price:</p>
-  </div>
-  <div>
-    <p>{selectedLead.createdBy}</p>
-    <p>{selectedLead.address}</p>
-    <p>{selectedLead.sellerName}</p>
-    <p>{selectedLead.sellerPhone}</p>
-    <p>{selectedLead.sellerOtherPhone}</p>
-    <p>{selectedLead.sellerEmail}</p>
-    <p>{selectedLead.otherEmail}</p>
-    <p>{selectedLead.address}</p>
-    <p>{selectedLead.note}</p>
-    <p>{selectedLead.motivation}</p>
-    <p>{selectedLead.idealPrice}</p>
-  </div>
-</div>
-</div>
-
+                  <h2 className="text-xl font-semibold mb-4 px-4 py-2 bg-gray-100">
+                    Lead Details
+                  </h2>
+                  <div className="grid grid-cols-2 gap-4 px-4 py-2">
+                    <div>
+                      <p className="font-semibold">Created By:</p>
+                      <p className="font-semibold">Location:</p>
+                      <p className="font-semibold">Seller Name:</p>
+                      <p className="font-semibold">Seller Phone:</p>
+                      <p className="font-semibold">Other Phone:</p>
+                      <p className="font-semibold">Seller Email:</p>
+                      <p className="font-semibold">Other Email:</p>
+                      <p className="font-semibold">Address:</p>
+                      <p className="font-semibold">Note:</p>
+                      <p className="font-semibold">Motivation:</p>
+                      <p className="font-semibold">Ideal Price:</p>
+                    </div>
+                    <div>
+                      <p>{selectedLead.createdBy}</p>
+                      <p>{selectedLead.address}</p>
+                      <p>{selectedLead.sellerName}</p>
+                      <p>{selectedLead.sellerPhone}</p>
+                      <p>{selectedLead.sellerOtherPhone}</p>
+                      <p>{selectedLead.sellerEmail}</p>
+                      <p>{selectedLead.otherEmail}</p>
+                      <p>{selectedLead.address}</p>
+                      <p>{selectedLead.note}</p>
+                      <p>{selectedLead.motivation}</p>
+                      <p>{selectedLead.idealPrice}</p>
+                    </div>
+                  </div>
+                </div>
                 <div className="mt-4 ml-0 mr-0">
                   <GoogleMapContainer />
                 </div>
               </div>
               <div className="bg-white rounded-lg shadow-md p-6 text-black mt-5">
-                <p>Show All Comments: welcome to {email}</p>
-                {fetchComments?.map((item, index) => (
-                  <div
-                    key={index}
-                    className="bg-white rounded-lg shadow-md p-6 text-black mt-5"
-                  >
-                    <div className="flex">
-                      <p className="mr-20">{item.commenter}</p>
-                      <p>
-                        {formatTimeAgo(new Date(item.time).toLocaleString())}
-                      </p>
-                    </div>
-                    <p>{item.comment}</p>
+                {/* Conditionally show Comments base on length */}
+                {fetchComments && fetchComments.length >= 2 && !allcomments ? (
+                  <div className="flex items-center">
+                    <FaCommentDots size={24} color="silver" />
+                    <button
+                      // className="flex items-center"
+                      onClick={() => {
+                        setAllcomments(!allcomments);
+                      }}
+                    >
+                      Show All Comments
+                    </button>
+                    {/* <BsThreeDots/> */}
                   </div>
-                ))}
+                ) : (
+                  <div className="flex items-center pr-4">
+                    {/* <BsThreeDots/> */}
+                    <FaCommentDots size={24} color="silver" />
+                    <button
+                      onClick={() => {
+                        setAllcomments(!allcomments);
+                      }}
+                    >
+                      Show Less Comment
+                    </button>
+                  </div>
+                )}
+                {/* I want condition loop through the array */}
+                {fetchComments
+                ?.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
+                  ?.slice(0, allcomments ? fetchComments.length : 2)
+                  .map((item, index) => (
+                    <div
+                      key={index}
+                      className="bg-white rounded-lg shadow-md p-6 text-black mt-5"
+                    >
+                      <div className="flex">
+                        <p className="mr-20">{item.commenter}</p>
+                        <p>
+                          {formatTimeAgo(new Date(item.time).toLocaleString())}
+                        </p>
+                      </div>
+                      <p>{item.comment}</p>
+                    </div>
+                  ))}
               </div>
             </>
           )}
