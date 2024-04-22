@@ -1,6 +1,7 @@
 import { useRef, useEffect,useState, useMemo } from "react";
 import { useLoadScript, GoogleMap } from '@react-google-maps/api';
 import type { NextPage } from "next";
+import { usePodioStore } from "../podioStore";
 
 declare global {
   interface Window {
@@ -25,6 +26,9 @@ function GoogleMapContainer() {
     []
   );
 
+  const {address}=usePodioStore();
+  const podioStore=usePodioStore()
+
   const mapOptions = useMemo<google.maps.MapOptions>(
     () => ({
       disableDefaultUI: true,
@@ -45,9 +49,11 @@ function GoogleMapContainer() {
   // }
   useEffect(() => {
     if (isLoaded) {
+      console.log('adress from Podio',address,podioStore);
+      
       // Use Google Maps Geocoding service to get latitude and longitude for the location name
       const geocoder = new window.google.maps.Geocoder();
-      geocoder.geocode({ address: 'DALLAS' }, (results:GeocoderResult[], status:string) => {
+      geocoder.geocode({ address: address }, (results:GeocoderResult[], status:string) => {
         if (status === 'OK' && results && results.length > 0) {
           const location = results[0].geometry.location;
           setMapCenter({ lat: location.lat(), lng: location.lng() });
@@ -65,8 +71,8 @@ function GoogleMapContainer() {
       <GoogleMap
         options={mapOptions}
         zoom={14}
-        // center={mapCenter}
-        center={mapCenter2 || mapCenter}
+        center={mapCenter||mapCenter2}
+        // center={mapCenter2 || mapCenter}
         mapTypeId={google.maps.MapTypeId.ROADMAP}
         mapContainerStyle={{ width: "100%", height: "100%" }}
         onLoad={() => console.log("Map Component Loaded...")}

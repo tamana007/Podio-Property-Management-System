@@ -1,8 +1,8 @@
-'use client'
+"use client";
 import React, { useEffect, useRef, useState } from "react";
 import AdminLayout from "@/app/Components/AdminLayout";
 import { FiPaperclip, FiMapPin } from "react-icons/fi";
-import { usePodioStore } from "../podioStore";
+import { usePodioStore,setAddress } from "../podioStore";
 import { formatTimeAgo } from "../helpingFunctions/formatTimeAgo";
 import { extractBeforeAt } from "../helpingFunctions/extractBeforeAt";
 import GoogleMapContainer from "@/app/Components/GoogleMapContainer";
@@ -44,6 +44,8 @@ const Page: React.FC = () => {
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
   const [googleMapLoaded, setGoogleMapLoaded] = useState<boolean>(false);
+  const [expand, setExpand] = useState<boolean>(false);
+  const [address,setAddress]=useState<string|null>('CANADA')
 
   const handleLeadClick = (leadItem: DataType) => {
     setSelectedLead(leadItem);
@@ -51,6 +53,14 @@ const Page: React.FC = () => {
     setCommenter(extractBeforeAt(email));
     podioStore.setEmail(email);
     fetchComment(leadItem.mleadId);
+    // setAddress(selectedLead?.address)
+    setAddress(leadItem.address); 
+    podioStore.setAddress(address)
+    console.log(podioStore,'check addres in podio store');
+    console.log('adress check',address);
+    
+    
+
   };
 
   const commentFunc = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -102,9 +112,8 @@ const Page: React.FC = () => {
     const googleMapsTab = window.open(googleMapsUrl, "_blank");
 
     const urlChangeListener = (event: MessageEvent) => {
-      
       if (event.origin === "https://www.google.com") {
-      console.log('URL EVENT LISTENED');
+        console.log("URL EVENT LISTENED");
 
         const googleMapsUrl = event.data;
         const match = googleMapsUrl.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
@@ -135,8 +144,6 @@ const Page: React.FC = () => {
     };
     toFetch();
   }, []);
-
-
 
   return (
     <AdminLayout>
@@ -170,14 +177,7 @@ const Page: React.FC = () => {
                       size={24}
                       onClick={handleShareLocation}
                     />
-                    {/* <button onClick={handleShareLocation}>
-                      Share Location
-                    </button>
-                    {latitude !== null && longitude !== null && (
-                      <p>
-                        Latitude: {latitude}, Longitude: {longitude}
-                      </p>
-                    )} */}
+
                     <button
                       type="submit"
                       className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-1 px-4 rounded-md transition duration-300 mr-2"
@@ -186,14 +186,41 @@ const Page: React.FC = () => {
                     </button>
                   </div>
                 </form>
-                <h2 className="text-xl font-semibold mb-4">Lead Details</h2>
-                <p>CreatedBy: {selectedLead.createdBy}</p>
-                <p>Location: {selectedLead.address}</p>
+                <div className="border border-gray-300 rounded-lg overflow-hidden">
+                <h2 className="text-xl font-semibold mb-4 px-4 py-2 bg-gray-100">Lead Details</h2>
+  <div className="grid grid-cols-2 gap-4 px-4 py-2">
+  <div>
+    <p className="font-semibold">Created By:</p>
+    <p className="font-semibold">Location:</p>
+    <p className="font-semibold">Seller Name:</p>
+    <p className="font-semibold">Seller Phone:</p>
+    <p className="font-semibold">Other Phone:</p>
+    <p className="font-semibold">Seller Email:</p>
+    <p className="font-semibold">Other Email:</p>
+    <p className="font-semibold">Address:</p>
+    <p className="font-semibold">Note:</p>
+    <p className="font-semibold">Motivation:</p>
+    <p className="font-semibold">Ideal Price:</p>
+  </div>
+  <div>
+    <p>{selectedLead.createdBy}</p>
+    <p>{selectedLead.address}</p>
+    <p>{selectedLead.sellerName}</p>
+    <p>{selectedLead.sellerPhone}</p>
+    <p>{selectedLead.sellerOtherPhone}</p>
+    <p>{selectedLead.sellerEmail}</p>
+    <p>{selectedLead.otherEmail}</p>
+    <p>{selectedLead.address}</p>
+    <p>{selectedLead.note}</p>
+    <p>{selectedLead.motivation}</p>
+    <p>{selectedLead.idealPrice}</p>
+  </div>
+</div>
+</div>
+
                 <div className="mt-4 ml-0 mr-0">
-                <GoogleMapContainer/>
-
+                  <GoogleMapContainer />
                 </div>
-
               </div>
               <div className="bg-white rounded-lg shadow-md p-6 text-black mt-5">
                 <p>Show All Comments: welcome to {email}</p>
