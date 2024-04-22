@@ -8,6 +8,7 @@ import { usePodioStore, setAddress } from "../podioStore";
 import { formatTimeAgo } from "../helpingFunctions/formatTimeAgo";
 import { extractBeforeAt } from "../helpingFunctions/extractBeforeAt";
 import GoogleMapContainer from "@/app/Components/GoogleMapContainer";
+import Activity from "@/app/Components/Activity";
 
 interface DataType {
   _id: number;
@@ -151,7 +152,8 @@ const Page: React.FC = () => {
         <div className="w-1/2 p-4 border-r">
           {selectedLead && (
             <>
-              {/* LEFT SECTION */}
+              {/* LEFT SECTION :COMMENTS:::::::::::::::::::::::::::::::::::::::*/}
+
               <div className="bg-white rounded-lg shadow-md p-6 text-black">
                 <form className="flex-col" onSubmit={handleShare}>
                   <textarea
@@ -271,9 +273,11 @@ const Page: React.FC = () => {
                     </div>
                   ))}
               </div>
+              <Activity/>
             </>
           )}
         </div>
+        {/* RIGHT SECTION:LEADS:::::::::::::::::::::::::::::::::::::: */}
         <div className="w-1/2 p-4">
           <h1 className="text-xl font-semibold mb-4 text-black">
             Leads Created By
