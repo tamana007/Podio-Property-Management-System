@@ -9,8 +9,8 @@ const Activity = ({ leadAssignment, disposition, stageOfLead }) => {
 
       <div className="grid grid-cols-1 gap-4 px-4 py-2">
         <div>
-          <div className="flex justify-between">
-            <p className="font-semibold text-black">Lead Assignment:</p>
+          <div className="flex justify-between text-black">
+            <p className="font-semibold">Lead Assignment:</p>
             {/* <p>{leadAssignment}goes here</p> */}
             <input  type="text" className="border border-gray-300 rounded px-3 py-1" />
           </div>
@@ -27,8 +27,8 @@ const Activity = ({ leadAssignment, disposition, stageOfLead }) => {
         <div>
           <div className="flex justify-between">
             <p className="font-semibold text-black">Lead Created By:</p>
-            <div>
-              <p className="bg-gray-500">Arash</p>
+            <div className='text-black'>
+              <p >Arash</p>
               {/* <button className="bg-gray-500 text-white px-3 py-1 rounded">False</button> */}
             </div>
           </div>
@@ -45,8 +45,8 @@ const Activity = ({ leadAssignment, disposition, stageOfLead }) => {
           </div>
         </div>
         <div>
-          <div className="flex flex-col">
-            <p className="font-semibold text-black">Stage of Lead:</p>
+          <div className="flex flex-col ">
+            <p className="font-semibold text-black mb-8 ">Stage of Lead:</p>
             <div className="flex flex-wrap">
             <button className="bg-gray-500 text-white px-3 py-1 rounded mr-2 mb-2">New Untouched</button>
             <button className="bg-gray-500 text-white px-3 py-1 rounded mr-2 mb-2">Contacted</button>
@@ -64,7 +64,6 @@ const Activity = ({ leadAssignment, disposition, stageOfLead }) => {
             <button className="bg-gray-500 text-white px-3 py-1 rounded mr-2 mb-2">Memorandum Filed</button>
             <button className="bg-gray-500 text-white px-3 py-1 rounded mr-2 mb-2">DO NOT GET UNDER CONTRACT AGAIN</button>
 
-              {/* Add more buttons for other stages */}
             </div>
           </div>
         </div>
