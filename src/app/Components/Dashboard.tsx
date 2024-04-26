@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { Component, useEffect, useRef, useState } from "react";
 import AdminLayout from "@/app/Components/AdminLayout";
 import { FiPaperclip, FiMapPin } from "react-icons/fi";
 import { FaCommentDots } from "react-icons/fa";
@@ -31,6 +31,12 @@ interface DataTypetwo {
   comment: string;
   leadId: number;
 }
+interface proparr{
+  prev: string;
+ 
+}
+
+
 
 const Page: React.FC = () => {
   const podioStore = usePodioStore();
@@ -50,6 +56,8 @@ const Page: React.FC = () => {
   const [expand, setExpand] = useState<boolean>(false);
   const [address, setAddress] = useState<string | null>(null);
   const [allcomments, setAllcomments] = useState<boolean>(false);
+  const [createdBy, setCreatedBy] = useState<string>("");
+
 
   const handleLeadClick = (leadItem: DataType) => {
     setSelectedLead(leadItem);
@@ -57,12 +65,18 @@ const Page: React.FC = () => {
     setCommenter(extractBeforeAt(email));
     podioStore.setEmail(email);
     fetchComment(leadItem.mleadId);
-    // setAddress(selectedLead?.address)
     setAddress(leadItem.address);
     podioStore.setAddress(address);
     console.log(podioStore, "check addres in podio store");
     console.log("adress check", address);
+  setCreatedBy(leadItem.createdBy)
+ 
+    
   };
+
+  useEffect(()=>{
+
+  },[selectedLead])
 
   const commentFunc = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setComment(e.target.value);
@@ -273,7 +287,8 @@ const Page: React.FC = () => {
                     </div>
                   ))}
               </div>
-              <Activity/>
+              <Activity createdBy={createdBy}/>
+
             </>
           )}
         </div>
