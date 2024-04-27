@@ -31,9 +31,15 @@ const Activity = (createdBy: ActivityProps, mleadId: mleadIdProps) => {
   const [leadAssignment, setLeadAssignment] = useState<string>("");
   const [disposition, setDisposition] = useState<string>("");
   const [region, setRegion] = useState<string>("");
-  const [stageOfLead, setStageOfLead] = useState<string>("");
-  const [status,setStatus]=useState<string>("")
-
+  const [stageOfLead, setStageOfLead] = useState<string[]>([
+    "Contacted",
+    "ContractSent",
+    "UnderContract",
+    "AssignmentSent",
+    "AssignmentReceived",
+  ]);
+  const [clicked, setClicked] = useState<{name:string}|null>(null);
+  const [status, setStatus] = useState<string>("");
 
   function changeRegion(regionparam: string) {
     setRegion(regionparam);
@@ -43,49 +49,55 @@ const Activity = (createdBy: ActivityProps, mleadId: mleadIdProps) => {
     e.preventDefault();
     // console.log('form function logged');
   }
-  function handleDisposition(e:React.MouseEvent<HTMLButtonElement>){
-    const {name}=e.currentTarget;
-    setDisposition(name)
-
+  function handleDisposition(e: React.MouseEvent<HTMLButtonElement>) {
+    const { name } = e.currentTarget;
+    setDisposition(name);
   }
-  function handleStatus(e:React.MouseEvent<HTMLButtonElement>){
-    const{name,value}=e.currentTarget;
+  function handleStatus(e: React.MouseEvent<HTMLButtonElement>) {
+    const { name, value } = e.currentTarget;
     setStatus(name);
-    console.log('status logged',status);
-
-    
+    console.log("status logged", status);
   }
-  useEffect(()=>{
-    const saveActivity=async()=>{
+  const handleButtonClick = (stage: string) => {
+    setClicked((prevClicked) => ({
+      ...prevClicked,
+      name: stage,
+    })
+    
+    );
+    console.log('stage',stage);
+console.log('cliced',clicked);
+
+
+    // You can add more functionality here if needed
+  };
+  useEffect(() => {
+    const saveActivity = async () => {
       try {
-        const res=await fetch('/api/activity',{
-          method:'POST',
-          body:JSON.stringify({leadAssignment,disposition,createdBy,region,status})
-  
-        })
-        if(res.ok){
-          console.log('sent Successfully');
-          
+        const res = await fetch("/api/activity", {
+          method: "POST",
+          body: JSON.stringify({
+            leadAssignment,
+            disposition,
+            createdBy,
+            region,
+            status,
+          }),
+        });
+        if (res.ok) {
+          console.log("sent Successfully");
         }
-        
       } catch (error) {
-        console.log('error happened',error);
-        
-        
+        console.log("error happened", error);
       }
-      
-
-    }
-    saveActivity()
-
-  },[
-    handleStatus
-  ])
+    };
+    saveActivity();
+  }, [handleStatus]);
 
   useEffect(() => {
     console.log("disposition real data", disposition);
     // console.log("action from from useefcet", actionForm);
-  }, [disposition, 'disposition got']);
+  }, [disposition, "disposition got"]);
 
   return (
     <div className="bg-white border border-gray-300 rounded-lg overflow-hidden">
@@ -119,23 +131,22 @@ const Activity = (createdBy: ActivityProps, mleadId: mleadIdProps) => {
               <div>
                 <button
                   className={`bg-gray-500 text-white px-3 py-1 rounded mr-2 ${
-                    disposition==='True' ? "bg-green-600" : ""
+                    disposition === "True" ? "bg-green-600" : ""
                   }`}
                   name="True"
                   onClick={(e) => {
-                    handleDisposition(e)
-
+                    handleDisposition(e);
                   }}
                 >
                   True
                 </button>
                 <button
-                name="False"
+                  name="False"
                   className={`bg-gray-500 text-white px-3 py-1 rounded mr-2 ${
-                    disposition==='False' ? "bg-green-600" : ""
+                    disposition === "False" ? "bg-green-600" : ""
                   }`}
                   onClick={(e) => {
-                  handleDisposition(e)
+                    handleDisposition(e);
                   }}
                 >
                   False
@@ -193,65 +204,26 @@ const Activity = (createdBy: ActivityProps, mleadId: mleadIdProps) => {
               </div>
             </div>
           </div>
-          {/* ::::::::::::::::::::::::::::::STAGE OF LEAD:::::::::::::::::::::::::::: */}
+          {/* :::::::::::::::::::::::::::::::::::::::::::::::::::::STAGE OF LEAD::::::::::::::::::::::::::::::::::::::::::::::::: */}
+{/* Loop through stages, creating a button for each one. When a button is clicked, store its stage in a state and add a class to the button if it matches the stored stage */}
           <div>
             <div className="flex flex-col ">
               <p className="font-semibold text-black mb-8 ">Stage of Lead:</p>
               <div className="flex flex-wrap">
-                <button
-                onClick={(e)=>{handleStatus(e)}}
-                  name="Contracted"
-                  value={"Contracted"}
-                  type="submit"
-                  className={` bg-gray-500 text-white px-3 py-1 rounded mr-2 mb-2 ${
-                    status === "Contracted" ? "bg-green-600" : ""
-                  }`}
-                >
-                  Contacted
-                </button>
-                <button
-                onClick={(e)=>{handleStatus(e)}}
-                  name="ContractSent"
-                  value={"Contact Sent"}
-                  type="submit"
-                  className={`bg-gray-500 text-white px-3 py-1 rounded mr-2 mb-2 ${
-                    status === "ContractSent" ? "bg-green-600" : ""
-                  }`}
-                >
-                  Contract Sent
-                </button>
-                <button
-                 onClick={(e)=>{handleStatus(e)}}
-                  name="UnderContract"
-                  value={" Under Contract"}
-                  className={`bg-gray-500 text-white px-3 py-1 rounded mr-2 mb-2 ${
-                    status === "UnderContract" ? "bg-green-600" : ""
-                  }`}
-                >
-                  Under Contract
-                </button>
-                <button
-                onClick={(e)=>{handleStatus(e)}}
-                  name="AssignmentSent"
-                  value={"Assignment Sent"}
-                  type="submit"
-                  className={`bg-gray-500 text-white px-3 py-1 rounded mr-2 mb-2 ${
-                    status === "AssignmentSent" ? "bg-green-600" : ""
-                  }`}
-                >
-                  Assignment Sent
-                </button>
-                <button
-                onClick={(e)=>{handleStatus(e)}}
-                  type="submit"
-                  name="AssignmentReceived"
-                  value={"Assignment Received"}
-                  className={`bg-gray-500 text-white px-3 py-1 rounded mr-2 mb-2 ${
-                    status === "AssignmentReceived" ? "bg-green-600" : ""
-                  }`}
-                >
-                  Assignment received
-                </button>
+                {stageOfLead.map((stage) => (
+                  <button
+                    key={stage}
+                    onClick={() => {
+                      handleButtonClick(stage);
+                    }}
+                    type="submit"
+                    className={`bg-gray-500 text-white px-3 py-1 rounded mr-2 mb-2 ${
+                      clicked && clicked.name === stage ? "bg-green-600" : ""
+                    }`}
+                  >
+                    {stage}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
