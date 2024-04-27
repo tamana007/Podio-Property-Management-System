@@ -2,7 +2,7 @@ import mongoose, { Schema,Document } from "mongoose";
 
 //Define the interface
 interface IActions extends Document{
-  leadId:number;
+  leadId:number|null;
   leadAssignment:string;
 disposition:string;
 createdBy:string;

@@ -8,6 +8,9 @@ import React, {
 interface ActivityProps {
   createdBy: string;
 }
+interface mleadIdProps {
+  mleadId: number;
+}
 interface ActionForm {
   leadAssignment: string;
   disposition: string;
@@ -23,15 +26,14 @@ const initialData: ActionForm = {
   stageOfLead: "",
 };
 
-const Activity = (createdBy: ActivityProps) => {
-  const [actionForm, setActionForm] = useState<ActionForm>(initialData);
+const Activity = (createdBy: ActivityProps, mleadId: mleadIdProps) => {
+  // const [actionForm, setActionForm] = useState<ActionForm>(initialData);
   const [leadAssignment, setLeadAssignment] = useState<string>("");
   const [disposition, setDisposition] = useState<string>("");
-  const [selectDisposition, setSelectDisposition] = useState<boolean>(false);
-  const [selectDisposition2, setSelectDisposition2] = useState<boolean>(false);
   const [region, setRegion] = useState<string>("");
-  const [stageOfLead,setStageOfLead]=useState<string>("");
-  //  const[stageOfLead,set]
+  const [stageOfLead, setStageOfLead] = useState<string>("");
+  const [status,setStatus]=useState<string>("")
+
 
   function changeRegion(regionparam: string) {
     setRegion(regionparam);
@@ -39,17 +41,51 @@ const Activity = (createdBy: ActivityProps) => {
   }
   function formFunc(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const { name, value } = e.currentTarget;
-    setActionForm((prev) => ({ ...prev, [name]: value }));
-    console.log('form function consoled',actionForm,'naem');
+    // console.log('form function logged');
+  }
+  function handleDisposition(e:React.MouseEvent<HTMLButtonElement>){
+    const {name}=e.currentTarget;
+    setDisposition(name)
+
+  }
+  function handleStatus(e:React.MouseEvent<HTMLButtonElement>){
+    const{name,value}=e.currentTarget;
+    setStatus(name);
+    console.log('status logged',status);
+
     
   }
+  useEffect(()=>{
+    const saveActivity=async()=>{
+      try {
+        const res=await fetch('/api/activity',{
+          method:'POST',
+          body:JSON.stringify({leadAssignment,disposition,createdBy,region,status})
+  
+        })
+        if(res.ok){
+          console.log('sent Successfully');
+          
+        }
+        
+      } catch (error) {
+        console.log('error happened',error);
+        
+        
+      }
+      
+
+    }
+    saveActivity()
+
+  },[
+    handleStatus
+  ])
 
   useEffect(() => {
     console.log("disposition real data", disposition);
-    console.log('action from from useefcet',actionForm);
-    
-  }, [disposition,actionForm]);
+    // console.log("action from from useefcet", actionForm);
+  }, [disposition, 'disposition got']);
 
   return (
     <div className="bg-white border border-gray-300 rounded-lg overflow-hidden">
@@ -58,8 +94,6 @@ const Activity = (createdBy: ActivityProps) => {
       </h2>
       <form
         onSubmit={(e) => {
-      // here I get the error for e 
-
           formFunc(e);
         }}
       >
@@ -72,7 +106,6 @@ const Activity = (createdBy: ActivityProps) => {
                 type="text"
                 className="border border-gray-300 rounded px-3 py-1"
                 onChange={(e) => {
-                  // setActionForm((prev)=>(...actionForm,e.target.value))
                   setLeadAssignment(e.target.value);
                 }}
               />
@@ -86,27 +119,23 @@ const Activity = (createdBy: ActivityProps) => {
               <div>
                 <button
                   className={`bg-gray-500 text-white px-3 py-1 rounded mr-2 ${
-                    selectDisposition ? "bg-green-600" : ""
+                    disposition==='True' ? "bg-green-600" : ""
                   }`}
                   name="True"
                   onClick={(e) => {
-                    setDisposition(e.currentTarget.name);
-                    setSelectDisposition(!selectDisposition);
-                    setSelectDisposition2(false);
+                    handleDisposition(e)
+
                   }}
                 >
                   True
                 </button>
                 <button
+                name="False"
                   className={`bg-gray-500 text-white px-3 py-1 rounded mr-2 ${
-                    selectDisposition2 ? "bg-green-600" : ""
+                    disposition==='False' ? "bg-green-600" : ""
                   }`}
-                  name="False"
                   onClick={(e) => {
-                    setDisposition(e.currentTarget.name);
-                    setSelectDisposition(false);
-                    setSelectDisposition2(!selectDisposition2);
-                    console.log(disposition, "from false state");
+                  handleDisposition(e)
                   }}
                 >
                   False
@@ -170,48 +199,56 @@ const Activity = (createdBy: ActivityProps) => {
               <p className="font-semibold text-black mb-8 ">Stage of Lead:</p>
               <div className="flex flex-wrap">
                 <button
-                onClick={()=>{setStageOfLead('Contracted')}}
-                  name="stageOfLead"
+                onClick={(e)=>{handleStatus(e)}}
+                  name="Contracted"
                   value={"Contracted"}
                   type="submit"
-                  className={` bg-gray-500 text-white px-3 py-1 rounded mr-2 mb-2 ${stageOfLead==='Contracted' ? "bg-green-600" : ""}`}
+                  className={` bg-gray-500 text-white px-3 py-1 rounded mr-2 mb-2 ${
+                    status === "Contracted" ? "bg-green-600" : ""
+                  }`}
                 >
                   Contacted
                 </button>
                 <button
-                onClick={()=>{setStageOfLead('ContractSent')}}
-                  name="stageOfLead"
+                onClick={(e)=>{handleStatus(e)}}
+                  name="ContractSent"
                   value={"Contact Sent"}
                   type="submit"
-                  className={`bg-gray-500 text-white px-3 py-1 rounded mr-2 mb-2 ${stageOfLead==='ContractSent' ? "bg-green-600" : ""}`}
+                  className={`bg-gray-500 text-white px-3 py-1 rounded mr-2 mb-2 ${
+                    status === "ContractSent" ? "bg-green-600" : ""
+                  }`}
                 >
                   Contract Sent
                 </button>
                 <button
-                onClick={()=>{setStageOfLead('UnderContract')}}
-                  name="stageOfLead"
+                 onClick={(e)=>{handleStatus(e)}}
+                  name="UnderContract"
                   value={" Under Contract"}
-                  className={`bg-gray-500 text-white px-3 py-1 rounded mr-2 mb-2 ${stageOfLead==='UnderContract' ? "bg-green-600" : ""}`}
+                  className={`bg-gray-500 text-white px-3 py-1 rounded mr-2 mb-2 ${
+                    status === "UnderContract" ? "bg-green-600" : ""
+                  }`}
                 >
                   Under Contract
                 </button>
                 <button
-                onClick={()=>{setStageOfLead('AssignmentSent')}}
-                  name="stageOfLead"
+                onClick={(e)=>{handleStatus(e)}}
+                  name="AssignmentSent"
                   value={"Assignment Sent"}
                   type="submit"
-                  className={`bg-gray-500 text-white px-3 py-1 rounded mr-2 mb-2 ${stageOfLead==='AssignmentSent' ? "bg-green-600" : ""}`}
+                  className={`bg-gray-500 text-white px-3 py-1 rounded mr-2 mb-2 ${
+                    status === "AssignmentSent" ? "bg-green-600" : ""
+                  }`}
                 >
                   Assignment Sent
                 </button>
                 <button
-                onClick={()=>{
-                  setStageOfLead('AssignmentReceived')
-                }}
+                onClick={(e)=>{handleStatus(e)}}
                   type="submit"
-                  name="stageOfLead"
+                  name="AssignmentReceived"
                   value={"Assignment Received"}
-                  className={`bg-gray-500 text-white px-3 py-1 rounded mr-2 mb-2 ${stageOfLead==='AssignmentReceived' ? "bg-green-600" : ""}`}
+                  className={`bg-gray-500 text-white px-3 py-1 rounded mr-2 mb-2 ${
+                    status === "AssignmentReceived" ? "bg-green-600" : ""
+                  }`}
                 >
                   Assignment received
                 </button>

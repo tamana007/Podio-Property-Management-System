@@ -287,7 +287,7 @@ const Page: React.FC = () => {
                     </div>
                   ))}
               </div>
-              <Activity createdBy={createdBy}/>
+              <Activity createdBy={createdBy} mleadId={mleadId}/>
 
             </>
           )}
