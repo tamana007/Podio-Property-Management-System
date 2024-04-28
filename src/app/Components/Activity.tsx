@@ -38,7 +38,7 @@ const Activity = (createdBy: ActivityProps, mleadId: mleadIdProps) => {
     "AssignmentSent",
     "AssignmentReceived",
   ]);
-  const [clicked, setClicked] = useState<{name:string}|null>(null);
+  const [clicked, setClicked] = useState<{ name: string } | null>(null);
   const [status, setStatus] = useState<string>("");
 
   function changeRegion(regionparam: string) {
@@ -62,37 +62,35 @@ const Activity = (createdBy: ActivityProps, mleadId: mleadIdProps) => {
     setClicked((prevClicked) => ({
       ...prevClicked,
       name: stage,
-    })
-    
-    );
-    console.log('stage',stage);
-console.log('cliced',clicked);
+    }));
+    console.log("stage", stage);
+    console.log("cliced", clicked);
 
-
-    // You can add more functionality here if needed
   };
-  useEffect(() => {
-    const saveActivity = async () => {
-      try {
-        const res = await fetch("/api/activity", {
-          method: "POST",
-          body: JSON.stringify({
-            leadAssignment,
-            disposition,
-            createdBy,
-            region,
-            status,
-          }),
-        });
-        if (res.ok) {
-          console.log("sent Successfully");
-        }
-      } catch (error) {
-        console.log("error happened", error);
+  const saveActivity = async () => {
+    try {
+      const res = await fetch("/api/activity", {
+        method: "POST",
+        body: JSON.stringify({
+          leadAssignment,
+          disposition,
+          createdBy,
+          region,
+          status,
+        }),
+      });
+      if (res.ok) {
+        console.log("sent Successfully");
       }
-    };
-    saveActivity();
-  }, [handleStatus]);
+    } catch (error) {
+      console.log("error happened", error);
+    }
+  };
+
+  // useEffect(() => {
+
+  //   saveActivity();
+  // }, [handleButtonClick]);
 
   useEffect(() => {
     console.log("disposition real data", disposition);
@@ -205,7 +203,7 @@ console.log('cliced',clicked);
             </div>
           </div>
           {/* :::::::::::::::::::::::::::::::::::::::::::::::::::::STAGE OF LEAD::::::::::::::::::::::::::::::::::::::::::::::::: */}
-{/* Loop through stages, creating a button for each one. When a button is clicked, store its stage in a state and add a class to the button if it matches the stored stage */}
+          {/* Loop through stages, creating a button for each one. When a button is clicked, store its stage in a state and add a class to the button if it matches the stored stage */}
           <div>
             <div className="flex flex-col ">
               <p className="font-semibold text-black mb-8 ">Stage of Lead:</p>
@@ -225,6 +223,12 @@ console.log('cliced',clicked);
                   </button>
                 ))}
               </div>
+              <button
+                className="bg-gray-500 text-white px-2 py-1 rounded mr-11 ml-11 mb-2 mt-3  "
+                onClick={saveActivity}
+              >
+                Save Changes
+              </button>
             </div>
           </div>
         </div>
