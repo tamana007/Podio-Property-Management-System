@@ -70,6 +70,8 @@ const Page: React.FC = () => {
     console.log(podioStore, "check addres in podio store");
     console.log("adress check", address);
   setCreatedBy(leadItem.createdBy)
+  // console.log('lead id from click',mleadId);
+  
  
     
   };
@@ -287,7 +289,10 @@ const Page: React.FC = () => {
                     </div>
                   ))}
               </div>
-              <Activity createdBy={createdBy} mleadId={mleadId}/>
+              {/* <Activity createdBy={createdBy} mleadId={mleadId}/>
+               */}
+               <Activity createdBy={createdBy} mleadId={mleadId}/>
+
 
             </>
           )}
