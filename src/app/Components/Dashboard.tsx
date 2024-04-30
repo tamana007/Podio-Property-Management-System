@@ -82,7 +82,18 @@ const Page: React.FC = () => {
 
   const commentFunc = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setComment(e.target.value);
+    if (e.target.value.includes('@')) {
+      apiCall()
+      console.log('comment includes @');
+      
+      
+    }
   };
+
+  function apiCall(){
+    console.log('api called');
+    
+  }
 
   const handleAttachmentClick = () => {
     fileInputRef.current?.click();

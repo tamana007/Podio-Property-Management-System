@@ -45,7 +45,7 @@ const updateResponseval = {
 };
 
 
-// const Activity = (createdBy: ActivityProps, mleadId: mleadIdProps) => {
+
   const Activity = ({ createdBy, mleadId }: { createdBy: string; mleadId: number | null }) => {
   const [leadAssignment, setLeadAssignment] = useState<string>("");
   const [disposition, setDisposition] = useState<string>("");
@@ -72,11 +72,15 @@ const updateResponseval = {
   });
   const [showStatus, setShowStatus] = useState<boolean>(true);
   const [updateResponse, setUpdateResponse]=useState(updateResponseval)
+  // Declare leadIdMatches at the top level of the component
+  const [leadIdMatches, setLeadIdMatches] = useState<boolean>(false);
 
-  //Functions
+
+
+
+  //Functions.................................................................
   function changeRegion(regionparam: string) {
     setRegion(regionparam);
-    // console.log("region name,", region);
   }
   function formFunc(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -91,8 +95,6 @@ const updateResponseval = {
       ...prevClicked,
       name: stage,
     }));
-    console.log("stage", stage);
-    console.log("cliced", clicked);
   };
 
   //API CALL...........................
@@ -102,21 +104,25 @@ const updateResponseval = {
       const res = await fetch("/api/activity", {
         method: "POST",
         body: JSON.stringify({
+          mleadId,
           leadAssignment,
           disposition,
           createdBy,
           region,
-          clicked,
-          mleadId,
+          stageOfLead: clicked ? clicked.name : "",
+          // stageOfLead:clicked?clicked.name,
+         
         }),
       });
       if (res.ok) {
-        setSendReq(true);
+        // setSendReq(true);
         const responsed = await res.json();
-        console.log("sent Successfully", responsed.newAction);
-        setResponse(responsed.newAction);
+        console.log('respond with data format checking',responsed.data);
+        
+        // console.log("recieved Successfully", responsed.newAction.mleadId);
+        setResponse(responsed.data);
         // console.log('send request result',sendReq);
-        // console.log('responseee',response);
+        console.log('responseee state',response);
 
       localStorage.setItem("activityStatus", JSON.stringify(response));
       // console.log('local storage data detected',updateResponse);
@@ -135,25 +141,42 @@ const updateResponseval = {
   useEffect(() => {
     const savedStatus = localStorage.getItem("activityStatus");
     if(savedStatus !==null){
-      console.log("from loal storage", savedStatus);
+      console.log("from local storage", savedStatus);
       setUpdateResponse(JSON.parse(savedStatus));
-    // console.log('not update finally',updateResponse);
     }
-    // console.log('update finally',updateResponse);
-
-  }, [response]);
-
-
+    console.log('update response finally from ls',updateResponse);
+    console.log('mleadId',mleadId, 'leadId','updated Response LeADID',updateResponse.mleadId);
+    
+    
+    
+    
+  }, [mleadId]);
 
   useEffect(() => {
-    console.log('mleadId',mleadId);
+    const calculatedMatches = updateResponse.leadId == mleadId;
+    console.log("leadIdMatches:", leadIdMatches);
+    console.log('calculate lead match----',calculatedMatches);
+    console.log('mleadId',typeof(mleadId), 'leadId','updated Response LeADID',typeof(updateResponse.mleadId));
+
+
+    setLeadIdMatches(calculatedMatches)
     
-    // console.log("disposition real data", disposition);
-    // saveActivity();
-  }, []);
+  console.log(calculatedMatches,'caclutedddddd');
+  
+
+
+    
+  }, [updateResponse, mleadId]);
+  
+
+  // useEffect(() => {
+  //   console.log('mleadId',mleadId);
+    
+  //   // console.log("disposition real data", disposition);
+  //   // saveActivity();
+  // }, []);
 
   // Check if leadId matches mleadId
-const leadIdMatches = updateResponse.leadId === mleadId;
 
   return (
     <div className="bg-white border border-gray-300 rounded-lg overflow-hidden">
@@ -300,7 +323,7 @@ const leadIdMatches = updateResponse.leadId === mleadId;
       </form>
       {/* // Check if leadId matches mleadId */}
 
-      {showStatus && (
+      {!showStatus && (
         <div className="bg-gray-200  border border-gray-300 rounded-lg overflow-hidden text-black mt-10">
           <h2 className="text-xl font-semibold mb-4 px-4 py-2 bg-gray-100 text-black">
             Status:{mleadId}

@@ -6,29 +6,25 @@ import { NextRequest, NextResponse } from "next/server";
 export const POST=async(req:NextRequest)=>{
 const data=await req.json();
 connectToDatabase();
-const mleadId=data.mleadId;
+const leadId=data.mleadId;
 const leadAssignment=data.leadAssignment;
 const disposition=data.disposition;
 const createdBy=data.createdBy.createdBy;
 const region=data.region;
-const stageofLead=data.clicked.name;
+const stageofLead=data.stageofLead;
 
-// const newobj={leadId,leadAssignment,disposition,createdBy,region,stageofLead}
- // Create a new instance of the ActionModel with the data
- const newAction = new ActionModel({
-  mleadId,
-  leadAssignment,
-  disposition,
-  createdBy,
-  region,
-  stageofLead
-});
 
-console.log(data,'data from activity api::::::::::::::::::',data);
-console.log(data,'stage of leacd from activity api::::::::::::::::::',stageofLead);
+const newData=await new ActionModel({
+  leadId,leadAssignment,disposition,createdBy,region,stageofLead
+})
 
-const sendTodab=await newAction.save()
+console.log(data,'data from activity api::::::::::::::::::',data,);
+// console.log('newa data---------------------',newData,'id-------------',newData.mleadId);
 
-return NextResponse.json({message:"Data sent suceed",newAction})
+// console.log(data,'stage of leacd from activity api::::::::::::::::::',stageofLead);
+
+const sendTodab=await newData.save()
+
+return NextResponse.json({message:"Data sent suceed",data})
 
 }
