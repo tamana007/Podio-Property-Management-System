@@ -56,7 +56,8 @@ const Page: React.FC = () => {
   const [allcomments, setAllcomments] = useState<boolean>(false);
   const [createdBy, setCreatedBy] = useState<string>("");
   const [mentionedComment, setMentionedComment] = useState<string[]>([]);
-  const [atClicked,setAtClicked]=useState<boolean>(false)
+  const [foundUser, setFoundUser] = useState<string>("");
+  const [atClicked, setAtClicked] = useState<boolean>(false);
   // Define state to store unique names
   const [uniqueNames, setUniqueNames] = useState<string[]>([]);
 
@@ -99,16 +100,25 @@ const Page: React.FC = () => {
     }
   };
 
-  // const apiCall =async()=>{
-  //   console.log('Grab mentioned users names',mentionedUser);
-  //   //I want to access users names here
+  function mentionFunc(user: string) {
+    console.log("user detected", typeof user);
+    setFoundUser(user);
+    //  setAtClicked(false)
 
-  // }
-  function mentionFunc(user:string){
-    console.log('user detected',user);
-    
-
+    console.log("founder", foundUser);
   }
+  // useEffect(()=>{
+
+  //   setComment(foundUser);
+
+  // },[mentionFunc])
+
+  useEffect(() => {
+    if (foundUser) {
+      setComment((prevComment) => foundUser);
+      setAtClicked(false);
+    }
+  }, [foundUser]);
 
   const handleAttachmentClick = () => {
     fileInputRef.current?.click();
@@ -203,19 +213,28 @@ const Page: React.FC = () => {
                       onChange={commentFunc}
                       value={comment}
                       placeholder="Enter your comment..."
-                      className="w-full h-8 rounded-md border border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      className="w-full h-8 rounded-md border border-gray-300 focus:border-indigo-100 focus:outline-none"
                       name="comment"
                     ></textarea>
                     {/* Mention Users list  */}
-                    { atClicked &&
-                      <div>
+                    {atClicked && (
+                      <div className="bg-white rounded-lg shadow-md text-black">
                         <ul>
-                          {mentionedComment?.map((user) => (
-                            <li onClick={(user)=>{mentionFunc(user)}}>{user}</li>
+                          {mentionedComment?.map((user, index) => (
+                            <li
+                              key={index}
+                              onClick={() => {
+                                mentionFunc(user);
+                              }}
+                              className="px-3 py-1 cursor-pointer hover:bg-gray-200"
+                            >
+                              {user}
+                            </li>
                           ))}
                         </ul>
                       </div>
-                    }
+                    )}
+                    {/* )} */}
                   </div>
 
                   <div className="flex justify-between mb-4 mt-4">
