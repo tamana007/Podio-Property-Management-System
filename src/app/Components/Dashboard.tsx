@@ -31,17 +31,14 @@ interface DataTypetwo {
   comment: string;
   leadId: number;
 }
-interface proparr{
+interface proparr {
   prev: string;
- 
 }
-
-
 
 const Page: React.FC = () => {
   const podioStore = usePodioStore();
   const { email } = usePodioStore(); // Access the email from the store
-  const {mentionedUser}=usePodioStore();
+  const { mentionedUser } = usePodioStore();
 
   const [lead, setLead] = useState<DataType[]>([]);
   const [selectedLead, setSelectedLead] = useState<DataType | null>(null);
@@ -58,9 +55,14 @@ const Page: React.FC = () => {
   const [address, setAddress] = useState<string | null>(null);
   const [allcomments, setAllcomments] = useState<boolean>(false);
   const [createdBy, setCreatedBy] = useState<string>("");
-
+  const [mentionedComment, setMentionedComment] = useState<string[]>([]);
+  const [atClicked,setAtClicked]=useState<boolean>(false)
+  // Define state to store unique names
+  const [uniqueNames, setUniqueNames] = useState<string[]>([]);
 
   const handleLeadClick = (leadItem: DataType) => {
+    console.log("lead", mentionedComment);
+
     setSelectedLead(leadItem);
     setmLeadId(leadItem.mleadId); // Set mleadId when lead is clicked
     setCommenter(extractBeforeAt(email));
@@ -70,32 +72,42 @@ const Page: React.FC = () => {
     podioStore.setAddress(address);
     console.log(podioStore, "check addres in podio store");
     console.log("adress check", address);
-  setCreatedBy(leadItem.createdBy)
-  // console.log('lead id from click',mleadId);
-  
- 
-    
+    setCreatedBy(leadItem.createdBy);
+    // console.log('lead id from click',mleadId);
   };
 
-  useEffect(()=>{
+  //Store User's Names inside the state
+  useEffect(() => {
+    //I want to store Unique names using SET
+    const uniqueUserName: Set<string> = new Set();
+    const users = lead.map((item) => {
+      uniqueUserName.add(item.createdBy);
+    });
+    // Convert the Set back to an array
+    const uniqueNamesArray: string[] = Array.from(uniqueUserName);
 
-  },[selectedLead])
+    setMentionedComment(uniqueNamesArray);
+  }, [mleadId]);
+
+  useEffect(() => {}, [selectedLead]);
 
   const commentFunc = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setComment(e.target.value);
-    if (e.target.value.includes('@')) {
-      apiCall()
-      console.log('comment includes @');
-      
-      
+    if (e.target.value.includes("@")) {
+      setAtClicked(true);
+      console.log("comment includes @", mentionedUser);
     }
   };
 
-  const apiCall =async()=>{
-    console.log('Grab mentioned users names',mentionedUser);
-    //I want to access users names here 
+  // const apiCall =async()=>{
+  //   console.log('Grab mentioned users names',mentionedUser);
+  //   //I want to access users names here
 
+  // }
+  function mentionFunc(user:string){
+    console.log('user detected',user);
     
+
   }
 
   const handleAttachmentClick = () => {
@@ -186,13 +198,26 @@ const Page: React.FC = () => {
 
               <div className="bg-white rounded-lg shadow-md p-6 text-black">
                 <form className="flex-col" onSubmit={handleShare}>
-                  <textarea
-                    onChange={commentFunc}
-                    value={comment}
-                    placeholder="Enter your comment..."
-                    className="w-full h-8 rounded-md border border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    name="comment"
-                  ></textarea>
+                  <div>
+                    <textarea
+                      onChange={commentFunc}
+                      value={comment}
+                      placeholder="Enter your comment..."
+                      className="w-full h-8 rounded-md border border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      name="comment"
+                    ></textarea>
+                    {/* Mention Users list  */}
+                    { atClicked &&
+                      <div>
+                        <ul>
+                          {mentionedComment?.map((user) => (
+                            <li onClick={(user)=>{mentionFunc(user)}}>{user}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    }
+                  </div>
+
                   <div className="flex justify-between mb-4 mt-4">
                     <input
                       type="file"
@@ -284,9 +309,12 @@ const Page: React.FC = () => {
                     </button>
                   </div>
                 )}
-                {/* I want condition loop through the array */}
+                {/* I want conditionly loop through the array */}
                 {fetchComments
-                ?.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
+                  ?.sort(
+                    (a, b) =>
+                      new Date(b.time).getTime() - new Date(a.time).getTime()
+                  )
                   ?.slice(0, allcomments ? fetchComments.length : 2)
                   .map((item, index) => (
                     <div
@@ -305,9 +333,7 @@ const Page: React.FC = () => {
               </div>
               {/* <Activity createdBy={createdBy} mleadId={mleadId}/>
                */}
-               <Activity createdBy={createdBy} mleadId={mleadId}/>
-
-
+              <Activity createdBy={createdBy} mleadId={mleadId} />
             </>
           )}
         </div>

@@ -11,7 +11,7 @@ import Dashboard from "@/app/Components/Dashboard";
 
 // Define the interface for props in WebForm component
 interface WebFormProps {
-  id: number; 
+  id: number;
 }
 
 const WebForm: React.FC = () => {
@@ -55,7 +55,7 @@ const WebForm: React.FC = () => {
   const [allData, setallData] = useState(initialData);
   const [submit, setSubmit] = useState<boolean>(true);
   //Users form mentionin
-  const [users,setUsers]=useState<string[]>([])
+  const [users, setUsers] = useState<string[]>([]);
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -84,17 +84,16 @@ const WebForm: React.FC = () => {
           ...allData,
           mleadId: allData.mleadId.toString(),
         }),
-        
       });
-      
     } catch (error) {}
     setSubmit(!submit);
-    //set the users names in mentioned state of store
-    const names: string[] = options.map(option => option.username); 
-    podioStore.setMentionedUser(names)
-  
-    
   };
+
+  useEffect(() => {
+    //set the users names in mentioned state of store
+    const names: string[] = options.map((option) => option.username);
+    podioStore.setMentionedUser(names);
+  }, []);
 
   useEffect(() => {
     const getOptions = async () => {
