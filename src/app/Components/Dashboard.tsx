@@ -41,6 +41,7 @@ interface proparr{
 const Page: React.FC = () => {
   const podioStore = usePodioStore();
   const { email } = usePodioStore(); // Access the email from the store
+  const {mentionedUser}=usePodioStore();
 
   const [lead, setLead] = useState<DataType[]>([]);
   const [selectedLead, setSelectedLead] = useState<DataType | null>(null);
@@ -90,8 +91,10 @@ const Page: React.FC = () => {
     }
   };
 
-  function apiCall(){
-    console.log('api called');
+  const apiCall =async()=>{
+    console.log('Grab mentioned users names',mentionedUser);
+    //I want to access users names here 
+
     
   }
 

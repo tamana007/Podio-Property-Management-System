@@ -7,10 +7,11 @@ import React, { ReactEventHandler, useEffect, useState } from "react";
 import AdminLayout from "../Components/AdminLayout";
 import { usePodioStore } from "../podioStore";
 import Dashboard from "@/app/Components/Dashboard";
+// import {usePodioStore} from '@/app/podioStore'
 
 // Define the interface for props in WebForm component
 interface WebFormProps {
-  id: number; // Define id prop with appropriate type
+  id: number; 
 }
 
 const WebForm: React.FC = () => {
@@ -53,6 +54,8 @@ const WebForm: React.FC = () => {
   };
   const [allData, setallData] = useState(initialData);
   const [submit, setSubmit] = useState<boolean>(true);
+  //Users form mentionin
+  const [users,setUsers]=useState<string[]>([])
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -64,7 +67,7 @@ const WebForm: React.FC = () => {
       ...prev,
       [name]: value,
     }));
-    console.log("input chningg", value);
+    // console.log("input chningg", value);
     podioStore.setUserName(allData.createdBy);
     // console.log("podio store after usernamae added", podioStore);
   };
@@ -81,9 +84,16 @@ const WebForm: React.FC = () => {
           ...allData,
           mleadId: allData.mleadId.toString(),
         }),
+        
       });
+      
     } catch (error) {}
     setSubmit(!submit);
+    //set the users names in mentioned state of store
+    const names: string[] = options.map(option => option.username); 
+    podioStore.setMentionedUser(names)
+  
+    
   };
 
   useEffect(() => {
