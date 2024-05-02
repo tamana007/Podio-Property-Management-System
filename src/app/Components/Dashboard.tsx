@@ -58,7 +58,7 @@ const Page: React.FC = () => {
   const [mentionedComment, setMentionedComment] = useState<string[]>([]);
   const [foundUser, setFoundUser] = useState<string>("");
   const [atClicked, setAtClicked] = useState<boolean>(false);
-  const [isMentioned,setIsMentioned]=useState(false);
+  const [isMentioned, setIsMentioned] = useState(false);
   // Define state to store unique names
   const [uniqueNames, setUniqueNames] = useState<string[]>([]);
 
@@ -75,7 +75,6 @@ const Page: React.FC = () => {
     console.log(podioStore, "check addres in podio store");
     console.log("adress check", address);
     setCreatedBy(leadItem.createdBy);
-    // console.log('lead id from click',mleadId);
   };
 
   //Store User's Names inside the state
@@ -87,10 +86,8 @@ const Page: React.FC = () => {
     });
     // Convert the Set back to an array
     const uniqueNamesArray: string[] = Array.from(uniqueUserName);
-
     setMentionedComment(uniqueNamesArray);
   }, [mleadId]);
-
   useEffect(() => {}, [selectedLead]);
 
   const commentFunc = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -115,20 +112,30 @@ const Page: React.FC = () => {
   function mentionFunc(user: string) {
     // console.log("user detected", typeof user);
     setFoundUser(user);
-     setAtClicked(!atClicked)
-    
+    setAtClicked(!atClicked);
 
     console.log("founder", foundUser);
   }
 
-
   useEffect(() => {
     if (foundUser) {
-      setComment(`@${foundUser}`);
+      setComment(foundUser);
       setAtClicked(false);
       setIsMentioned(true);
     }
   }, [foundUser]);
+
+  // const sendNotification=(part: string)=> {
+  //   console.log('I found the name',part);
+    
+  // }
+
+  // useEffect(()=>{
+  //   sendNotification()
+    
+  // },[fetchComments])
+
+  
 
   const handleAttachmentClick = () => {
     fileInputRef.current?.click();
@@ -148,7 +155,7 @@ const Page: React.FC = () => {
     }
   };
 
-  const handleShare = async (e: React.FormEvent) => {
+  const handleShare = async (e: React.FormEvent,part:string) => {
     e.preventDefault();
     try {
       if (!mleadId) {
@@ -208,7 +215,7 @@ const Page: React.FC = () => {
     toFetch();
   }, []);
 
-  const mentionedClass=isMentioned? 'bold-text': '';
+  const mentionedClass = isMentioned ? "bold-text" : "";
 
   return (
     <AdminLayout>
@@ -228,7 +235,7 @@ const Page: React.FC = () => {
                       className="w-full h-8 rounded-md border border-gray-300 focus:border-indigo-100 focus:outline-none "
                       name="comment"
                     ></textarea>
-                
+
                     {/* Mention Users list  */}
                     {atClicked && (
                       <div className="bg-white rounded-lg shadow-md text-black">
@@ -275,8 +282,7 @@ const Page: React.FC = () => {
                     </button>
                   </div>
                 </form>
-                 {/* Render formatted comment */}
-
+                {/* Render formatted comment */}
 
                 <div className="border border-gray-300 rounded-lg overflow-hidden">
                   <h2 className="text-xl font-semibold mb-4 px-4 py-2 bg-gray-100">
@@ -315,6 +321,7 @@ const Page: React.FC = () => {
                   <GoogleMapContainer />
                 </div>
               </div>
+
               <div className="bg-white rounded-lg shadow-md p-6 text-black mt-5">
                 {/* Conditionally show Comments base on length */}
                 {fetchComments && fetchComments.length >= 2 && !allcomments ? (
@@ -328,11 +335,9 @@ const Page: React.FC = () => {
                     >
                       Show All Comments
                     </button>
-                    {/* <BsThreeDots/> */}
                   </div>
                 ) : (
                   <div className="flex items-center pr-4">
-                    {/* <BsThreeDots/> */}
                     <FaCommentDots size={24} color="silver" />
                     <button
                       onClick={() => {
@@ -343,34 +348,46 @@ const Page: React.FC = () => {
                     </button>
                   </div>
                 )}
+
                 {/* I want conditionly loop through the array */}
                 {fetchComments
-  ?.sort(
-    (a, b) =>
-      new Date(b.time).getTime() - new Date(a.time).getTime()
-  )
-  ?.slice(0, allcomments ? fetchComments.length : 2)
-  .map((item, index) => (
-    <div
-      key={index}
-      className="bg-white rounded-lg shadow-md p-6 text-black mt-5"
-    >
-      <div className="flex">
-        <p className="mr-20">{item.commenter}</p>
-        <p>
-          {formatTimeAgo(new Date(item.time).toLocaleString())}
-        </p>
-      </div>
-      {/* Split the comment text by "@" symbol */}
-      {item.comment.split(" ").map((part, partIndex) => (
-        <span key={partIndex} className={partIndex === 0 ? "font-semibold text-teal-500 " : ""}>
-          {/* Render the first part as bold */}
-          {partIndex === 0 ? part : ` ${part}`}
-        </span>
-      ))}
-    </div>
-  ))}
+                  ?.sort(
+                    (a, b) =>
+                      new Date(b.time).getTime() - new Date(a.time).getTime()
+                  )
+                  ?.slice(0, allcomments ? fetchComments.length : 2)
+                  .map((item, index) => (
+                    <div
+                      key={index}
+                      className="bg-white rounded-lg shadow-md p-6 text-black mt-5"
+                    >
+                      <div className="flex">
+                        <p className="mr-20">{item.commenter}</p>
+                        <p>
+                          {formatTimeAgo(new Date(item.time).toLocaleString())}
+                        </p>
+                      </div>
+                      {/* Split the comment text by "@" symbol */}
 
+                      {item.comment.split(" ").map((part, partIndex) => {
+                        handleShare(part); // Call sendNotification here
+                        return (
+                          <span
+                          
+                            key={partIndex}
+                            className={
+                              partIndex === 0
+                                ? "font-semibold text-teal-500 "
+                                : ""
+                            }
+                          >
+                            {/* Render the first part as bold */}
+                            {partIndex === 0 ? part : ` ${part}`}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  ))}
               </div>
               {/* <Activity createdBy={createdBy} mleadId={mleadId}/>
                */}
