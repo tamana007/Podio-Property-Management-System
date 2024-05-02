@@ -58,6 +58,7 @@ const Page: React.FC = () => {
   const [mentionedComment, setMentionedComment] = useState<string[]>([]);
   const [foundUser, setFoundUser] = useState<string>("");
   const [atClicked, setAtClicked] = useState<boolean>(false);
+  const [isMentioned,setIsMentioned]=useState(false);
   // Define state to store unique names
   const [uniqueNames, setUniqueNames] = useState<string[]>([]);
 
@@ -95,28 +96,37 @@ const Page: React.FC = () => {
   const commentFunc = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setComment(e.target.value);
     if (e.target.value.includes("@")) {
-      setAtClicked(true);
-      console.log("comment includes @", mentionedUser);
+      // Check if "@" is followed by a space or other characters
+      const atIndex = e.target.value.indexOf("@");
+      const spaceIndex = e.target.value.indexOf(" ", atIndex);
+      if (spaceIndex === -1 || spaceIndex === atIndex + 1) {
+        // "@" is followed by a space or there are characters immediately after "@"
+        setAtClicked(true);
+        // console.log("comment includes @", mentionedUser);
+      } else {
+        // Typing after mentioning a name, hide the dropdown list
+        setAtClicked(false);
+      }
+    } else {
+      setAtClicked(false);
     }
   };
 
   function mentionFunc(user: string) {
-    console.log("user detected", typeof user);
+    // console.log("user detected", typeof user);
     setFoundUser(user);
-    //  setAtClicked(false)
+     setAtClicked(!atClicked)
+    
 
     console.log("founder", foundUser);
   }
-  // useEffect(()=>{
 
-  //   setComment(foundUser);
-
-  // },[mentionFunc])
 
   useEffect(() => {
     if (foundUser) {
-      setComment((prevComment) => foundUser);
+      setComment(`@${foundUser}`);
       setAtClicked(false);
+      setIsMentioned(true);
     }
   }, [foundUser]);
 
@@ -160,34 +170,34 @@ const Page: React.FC = () => {
     }
   };
 
-  const handleShareLocation = () => {
-    const googleMapsUrl = "https://www.google.com/maps";
-    const googleMapsTab = window.open(googleMapsUrl, "_blank");
+  // const handleShareLocation = () => {
+  //   const googleMapsUrl = "https://www.google.com/maps";
+  //   const googleMapsTab = window.open(googleMapsUrl, "_blank");
 
-    const urlChangeListener = (event: MessageEvent) => {
-      if (event.origin === "https://www.google.com") {
-        console.log("URL EVENT LISTENED");
+  //   const urlChangeListener = (event: MessageEvent) => {
+  //     if (event.origin === "https://www.google.com") {
+  //       console.log("URL EVENT LISTENED");
 
-        const googleMapsUrl = event.data;
-        const match = googleMapsUrl.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
-        if (match) {
-          const newLatitude = parseFloat(match[1]);
-          const newLongitude = parseFloat(match[2]);
-          setLatitude(newLatitude);
-          setLongitude(newLongitude);
-          googleMapsTab?.close();
-        }
-      }
-    };
+  //       const googleMapsUrl = event.data;
+  //       const match = googleMapsUrl.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+  //       if (match) {
+  //         const newLatitude = parseFloat(match[1]);
+  //         const newLongitude = parseFloat(match[2]);
+  //         setLatitude(newLatitude);
+  //         setLongitude(newLongitude);
+  //         googleMapsTab?.close();
+  //       }
+  //     }
+  //   };
 
-    window.addEventListener("message", urlChangeListener);
+  //   window.addEventListener("message", urlChangeListener);
 
-    if (googleMapsTab) {
-      googleMapsTab.onbeforeunload = () => {
-        window.removeEventListener("message", urlChangeListener);
-      };
-    }
-  };
+  //   if (googleMapsTab) {
+  //     googleMapsTab.onbeforeunload = () => {
+  //       window.removeEventListener("message", urlChangeListener);
+  //     };
+  //   }
+  // };
 
   useEffect(() => {
     const toFetch = async () => {
@@ -197,6 +207,8 @@ const Page: React.FC = () => {
     };
     toFetch();
   }, []);
+
+  const mentionedClass=isMentioned? 'bold-text': '';
 
   return (
     <AdminLayout>
@@ -213,9 +225,10 @@ const Page: React.FC = () => {
                       onChange={commentFunc}
                       value={comment}
                       placeholder="Enter your comment..."
-                      className="w-full h-8 rounded-md border border-gray-300 focus:border-indigo-100 focus:outline-none"
+                      className="w-full h-8 rounded-md border border-gray-300 focus:border-indigo-100 focus:outline-none "
                       name="comment"
                     ></textarea>
+                
                     {/* Mention Users list  */}
                     {atClicked && (
                       <div className="bg-white rounded-lg shadow-md text-black">
@@ -234,7 +247,6 @@ const Page: React.FC = () => {
                         </ul>
                       </div>
                     )}
-                    {/* )} */}
                   </div>
 
                   <div className="flex justify-between mb-4 mt-4">
@@ -252,7 +264,7 @@ const Page: React.FC = () => {
                     <FiMapPin
                       className="text-teal-600 cursor-pointer hover:text-gray-900 ml-2"
                       size={24}
-                      onClick={handleShareLocation}
+                      // onClick={handleShareLocation}
                     />
 
                     <button
@@ -263,6 +275,9 @@ const Page: React.FC = () => {
                     </button>
                   </div>
                 </form>
+                 {/* Render formatted comment */}
+
+
                 <div className="border border-gray-300 rounded-lg overflow-hidden">
                   <h2 className="text-xl font-semibold mb-4 px-4 py-2 bg-gray-100">
                     Lead Details
@@ -330,25 +345,32 @@ const Page: React.FC = () => {
                 )}
                 {/* I want conditionly loop through the array */}
                 {fetchComments
-                  ?.sort(
-                    (a, b) =>
-                      new Date(b.time).getTime() - new Date(a.time).getTime()
-                  )
-                  ?.slice(0, allcomments ? fetchComments.length : 2)
-                  .map((item, index) => (
-                    <div
-                      key={index}
-                      className="bg-white rounded-lg shadow-md p-6 text-black mt-5"
-                    >
-                      <div className="flex">
-                        <p className="mr-20">{item.commenter}</p>
-                        <p>
-                          {formatTimeAgo(new Date(item.time).toLocaleString())}
-                        </p>
-                      </div>
-                      <p>{item.comment}</p>
-                    </div>
-                  ))}
+  ?.sort(
+    (a, b) =>
+      new Date(b.time).getTime() - new Date(a.time).getTime()
+  )
+  ?.slice(0, allcomments ? fetchComments.length : 2)
+  .map((item, index) => (
+    <div
+      key={index}
+      className="bg-white rounded-lg shadow-md p-6 text-black mt-5"
+    >
+      <div className="flex">
+        <p className="mr-20">{item.commenter}</p>
+        <p>
+          {formatTimeAgo(new Date(item.time).toLocaleString())}
+        </p>
+      </div>
+      {/* Split the comment text by "@" symbol */}
+      {item.comment.split(" ").map((part, partIndex) => (
+        <span key={partIndex} className={partIndex === 0 ? "font-semibold text-teal-500 " : ""}>
+          {/* Render the first part as bold */}
+          {partIndex === 0 ? part : ` ${part}`}
+        </span>
+      ))}
+    </div>
+  ))}
+
               </div>
               {/* <Activity createdBy={createdBy} mleadId={mleadId}/>
                */}
