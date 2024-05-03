@@ -59,6 +59,8 @@ const Page: React.FC = () => {
   const [foundUser, setFoundUser] = useState<string>("");
   const [atClicked, setAtClicked] = useState<boolean>(false);
   const [isMentioned, setIsMentioned] = useState(false);
+  const [mentionedName, setMentionedName] = useState<string>("");
+  const [notifyUser, setNotifyUser] = useState<string>();
   // Define state to store unique names
   const [uniqueNames, setUniqueNames] = useState<string[]>([]);
 
@@ -114,7 +116,7 @@ const Page: React.FC = () => {
     setFoundUser(user);
     setAtClicked(!atClicked);
 
-    console.log("founder", foundUser);
+    // console.log("founder", foundUser);
   }
 
   useEffect(() => {
@@ -125,17 +127,17 @@ const Page: React.FC = () => {
     }
   }, [foundUser]);
 
-  // const sendNotification=(part: string)=> {
-  //   console.log('I found the name',part);
-    
-  // }
+  const sendNotification = (part: string) => {
+    console.log("I found the name new ethod", part);
+  };
 
-  // useEffect(()=>{
-  //   sendNotification()
-    
-  // },[fetchComments])
-
-  
+  // useEffect(() => {
+  //   fetchComments?.forEach(item => {
+  //     item.comment.split(" ").forEach(part => {
+  //       sendNotification(part);
+  //     });
+  //   });
+  // }, [comment]);
 
   const handleAttachmentClick = () => {
     fileInputRef.current?.click();
@@ -155,7 +157,7 @@ const Page: React.FC = () => {
     }
   };
 
-  const handleShare = async (e: React.FormEvent,part:string) => {
+  const handleShare = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       if (!mleadId) {
@@ -172,10 +174,41 @@ const Page: React.FC = () => {
       if (res.ok) {
         console.log("result received", res);
       }
+      // Extract mentioned name from the comment
+      console.log("coment extracted", comment);
+
+      // Split the comment text by spaces
+      const commentWords = comment.split(" ");
+      // Get the first word
+      const firstWord = commentWords[0];
+
+      setNotifyUser(firstWord);
+      console.log("notifies user", notifyUser);
     } catch (error) {
       console.log("errerrr", error);
     }
   };
+
+  // Function to send notifications
+  const sendNotifications = () => {
+    // Implement your notification logic here
+    console.log(`Sending notification to ${notifyUser}`);
+  };
+
+  useEffect(() => {
+    // if (notifyUser.length>0) {
+    sendNotifications();
+    // }
+  }, [notifyUser]);
+  useEffect(() => {
+    console.log("mentioned name", mentionedName);
+  }, [mentionedName]);
+
+  useEffect(() => {
+    if (mentionedName) {
+      sendNotification(mentionedName);
+    }
+  }, [mentionedName]);
 
   // const handleShareLocation = () => {
   //   const googleMapsUrl = "https://www.google.com/maps";
@@ -370,10 +403,9 @@ const Page: React.FC = () => {
                       {/* Split the comment text by "@" symbol */}
 
                       {item.comment.split(" ").map((part, partIndex) => {
-                        handleShare(part); // Call sendNotification here
+                        // sendNotification(part); // Call sendNotification here
                         return (
                           <span
-                          
                             key={partIndex}
                             className={
                               partIndex === 0
