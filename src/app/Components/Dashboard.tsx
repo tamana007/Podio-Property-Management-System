@@ -519,7 +519,7 @@ const Page: React.FC = () => {
                 </h2>
                 {/* {} */}
                 <h2 className="text-xl font-semibold mb-4  text-teal-500 ">
-                  LeadId
+                  {groupedLeads[createdBy].length}
                 </h2>
               </div>
               {groupedLeads[createdBy].map(
