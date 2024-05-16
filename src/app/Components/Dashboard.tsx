@@ -4,6 +4,8 @@ import AdminLayout from "@/app/Components/AdminLayout";
 import { FiPaperclip, FiMapPin } from "react-icons/fi";
 import { FaCommentDots } from "react-icons/fa";
 import { BsThreeDots } from "react-icons/bs";
+import { FaPlus, FaMinus } from 'react-icons/fa';
+
 // import { usePodioStore} from "../podioStore";
 import { usePodioStore } from "../podioStore";
 import { formatTimeAgo } from "../helpingFunctions/formatTimeAgo";
@@ -54,11 +56,10 @@ const Page: React.FC = () => {
   // const podioStore = usePodioStore();
   // const { email } = usePodioStore(); // Access the email from the store
 
-
   const podioStore = usePodioStore(); // Use the store
-  const {email}=usePodioStore();
+  const { email } = usePodioStore();
   const { mentionedUser } = usePodioStore();
-  const {identity}=usePodioStore();
+  const { identity } = usePodioStore();
 
   const [lead, setLead] = useState<DataType[]>([]);
   const [selectedLead, setSelectedLead] = useState<DataType | null>(null);
@@ -81,14 +82,20 @@ const Page: React.FC = () => {
   const [isMentioned, setIsMentioned] = useState(false);
   const [mentionedName, setMentionedName] = useState<string>("");
   const [notifyUser, setNotifyUser] = useState<string>();
-  const [sendNotificationto,setSentNotificationto]=useState<boolean>(false)
+  const [sendNotificationto, setSentNotificationto] = useState<boolean>(false);
   // Define state to store unique names
   const [uniqueNames, setUniqueNames] = useState<string[]>([]);
-  const [groupedLeads, setGroupedLeads] = useState<Record<string, LeadItem[]>>({});
+  const [groupedLeads, setGroupedLeads] = useState<Record<string, LeadItem[]>>(
+    {}
+  );
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(
+    {}
+  );
 
+  //Right Section Functions::::::::::::
   const handleLeadClick = (leadItem: DataType) => {
     console.log("lead", mentionedComment);
-    console.log('email from store',email);
+    console.log("email from store", email);
     setSelectedLead(leadItem);
     // const createdBy = (leadItem as { createdBy: string }).createdBy; // Add this line
     setmLeadId(leadItem.mleadId); // Set mleadId when lead is clicked
@@ -102,6 +109,32 @@ const Page: React.FC = () => {
     setCreatedBy(leadItem.createdBy);
   };
 
+  //toggle the expansion state
+  const toggleGroup = (createdBy: string) => {
+    setExpandedGroups((prevExpandedGroups) => ({
+      ...prevExpandedGroups,
+      [createdBy]: !prevExpandedGroups[createdBy],
+    }));
+  };
+
+  // Function to combine createdBy items which are similar
+  const combineCreatedByItems = (leads: LeadItem[]) => {
+    const groupedLeads: Record<string, LeadItem[]> = {};
+    leads.forEach((lead) => {
+      if (!groupedLeads[lead.createdBy]) {
+        groupedLeads[lead.createdBy] = [];
+      }
+      groupedLeads[lead.createdBy].push(lead);
+    });
+    return groupedLeads;
+  };
+  // Update groupedLeads when lead prop changes
+  React.useEffect(() => {
+    setGroupedLeads(combineCreatedByItems(lead));
+  }, [lead]);
+
+
+  //Left Section FUNCTIONS::::::::::::::::::::::::::
   //Store User's Names inside the state
   useEffect(() => {
     //I want to store Unique names using SET
@@ -150,10 +183,9 @@ const Page: React.FC = () => {
     }
   }, [foundUser]);
 
-  const sendNotification = (part: string) => {
-    console.log("I found the name new ethod", part);
-  };
-
+  // const sendNotification = (part: string) => {
+  //   console.log("I found the name new ethod", part);
+  // };
 
   const handleAttachmentClick = () => {
     fileInputRef.current?.click();
@@ -192,10 +224,8 @@ const Page: React.FC = () => {
       }
       // Extract mentioned name from the comment
       console.log("coment extracted", comment);
-      console.log(email,'email checkingggg');
-      console.log('podio store',podioStore);
-      
-
+      console.log(email, "email checkingggg");
+      console.log("podio store", podioStore);
 
       // Split the comment text by spaces
       const commentWords = comment.split(" ");
@@ -204,87 +234,68 @@ const Page: React.FC = () => {
 
       setNotifyUser(firstWord);
       console.log("notifies user", notifyUser);
-      
     } catch (error) {
       console.log("errerrr", error);
     }
   };
 
- // Function to send notifications
-const sendNotifications = () => {
-  // Implement your notification logic here
-  
-  if (notifyUser === createdBy) {
-      console.log(`Sending notification to ${notifyUser}`);
-      setSentNotificationto(true); // Corrected variable name
-      console.log('Notification sent');
-  } else {
-      console.log('Commenter:', commenter);
-      console.log('typeof',typeof notifyUser, typeof createdBy);
-      
-  }
-};
+  // Function to send notifications
+  // const sendNotifications = () => {
+  //   // Implement your notification logic here
 
-
-// Function to combine createdBy items which are similar
-const combineCreatedByItems = (leads: LeadItem[]) => {
-  const groupedLeads: Record<string, LeadItem[]> = {};
-  leads.forEach((lead) => {
-    if (!groupedLeads[lead.createdBy]) {
-      groupedLeads[lead.createdBy] = [];
-    }
-    groupedLeads[lead.createdBy].push(lead);
-  });
-  return groupedLeads;
-};
-// Update groupedLeads when lead prop changes
-React.useEffect(() => {
-  setGroupedLeads(combineCreatedByItems(lead));
-}, [lead]);
-
-  useEffect(() => {
-    // if (notifyUser.length>0) {
-    sendNotifications();
-    // }
-  }, [notifyUser]);
-  useEffect(() => {
-    console.log("mentioned name", mentionedName);
-  }, [mentionedName]);
-
-  useEffect(() => {
-    if (mentionedName) {
-      sendNotification(mentionedName);
-    }
-  }, [mentionedName]);
-
-  // const handleShareLocation = () => {
-  //   const googleMapsUrl = "https://www.google.com/maps";
-  //   const googleMapsTab = window.open(googleMapsUrl, "_blank");
-
-  //   const urlChangeListener = (event: MessageEvent) => {
-  //     if (event.origin === "https://www.google.com") {
-  //       console.log("URL EVENT LISTENED");
-
-  //       const googleMapsUrl = event.data;
-  //       const match = googleMapsUrl.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
-  //       if (match) {
-  //         const newLatitude = parseFloat(match[1]);
-  //         const newLongitude = parseFloat(match[2]);
-  //         setLatitude(newLatitude);
-  //         setLongitude(newLongitude);
-  //         googleMapsTab?.close();
-  //       }
-  //     }
-  //   };
-
-  //   window.addEventListener("message", urlChangeListener);
-
-  //   if (googleMapsTab) {
-  //     googleMapsTab.onbeforeunload = () => {
-  //       window.removeEventListener("message", urlChangeListener);
-  //     };
+  //   if (notifyUser === createdBy) {
+  //     console.log(`Sending notification to ${notifyUser}`);
+  //     setSentNotificationto(true); // Corrected variable name
+  //     console.log("Notification sent");
+  //   } else {
+  //     console.log("Commenter:", commenter);
+  //     console.log("typeof", typeof notifyUser, typeof createdBy);
   //   }
   // };
+
+  
+
+  // useEffect(() => {
+  //   // if (notifyUser.length>0) {
+  //   sendNotifications();
+  //   // }
+  // }, [notifyUser]);
+  // useEffect(() => {
+  //   console.log("mentioned name", mentionedName);
+  // }, [mentionedName]);
+
+  // useEffect(() => {
+  //   if (mentionedName) {
+  //     sendNotification(mentionedName);
+  //   }
+  // }, [mentionedName]);
+
+  const handleShareLocation = () => {
+    const googleMapsUrl = "https://www.google.com/maps";
+    const googleMapsTab = window.open(googleMapsUrl, "_blank");
+
+    const urlChangeListener = (event: MessageEvent) => {
+      if (event.origin === "https://www.google.com") {
+        console.log("URL EVENT LISTENED");
+
+        const googleMapsUrl = event.data;
+        const match = googleMapsUrl.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+        if (match) {
+          const newLatitude = parseFloat(match[1]);
+          const newLongitude = parseFloat(match[2]);
+          setLatitude(newLatitude);
+          setLongitude(newLongitude);
+          googleMapsTab?.close();
+        }
+      }
+    };
+    window.addEventListener("message", urlChangeListener);
+    if (googleMapsTab) {
+      googleMapsTab.onbeforeunload = () => {
+        window.removeEventListener("message", urlChangeListener);
+      };
+    }
+  };
 
   useEffect(() => {
     const toFetch = async () => {
@@ -412,7 +423,7 @@ React.useEffect(() => {
                         setAllcomments(!allcomments);
                       }}
                     >
-                      Show All  yyy{sendNotificationto?(<p>received</p>):""}
+                      Show All yyy{sendNotificationto ? <p>received</p> : ""}
                     </button>
                   </div>
                 ) : (
@@ -475,10 +486,12 @@ React.useEffect(() => {
             </>
           )}
         </div>
+
         {/* RIGHT SECTION:LEADS:::::::::::::::::::::::::::::::::::::: */}
-        {/* <div className="w-1/2 p-4">
+
+        <div className="w-1/2 p-4">
           <h1 className="text-xl font-semibold mb-4 text-black">
-            Leads Created By:{email}...
+            Leads Created By: {email}...
           </h1>
           <div className="flex justify-between">
             <h2
@@ -494,58 +507,42 @@ React.useEffect(() => {
               600
             </h2>
           </div>
-          {lead.map((item, index) => (
-            <div
-              key={index}
-              className="cursor-pointer bg-white rounded-lg shadow-md p-6 mb-4 text-black"
-              onClick={() => handleLeadClick(item)}
-            >
+          {Object.keys(groupedLeads).map((createdBy, index) => (
+            <div key={index}>
               <div className="flex justify-between">
-                <h2 className="text-xl font-semibold mb-4">{item.createdBy}</h2>
-                <h2>leadId {item.mleadId}</h2>
+                <h2
+                  onClick={() => toggleGroup(createdBy)}
+                  className="text-xl font-semibold mb-4 cursor-pointer  text-teal-500  "
+                >
+                  {expandedGroups[createdBy] ? <div className="flex justify-between"><span>{createdBy} </span><span className="text-teal-500">  <FaMinus/>   </span></div> : <div className="flex justify-between ml-5px"><span>{createdBy}</span><span className="text-teal-500"> <FaPlus/></span></div>}
+                  
+                </h2>
+                {/* {} */}
+                <h2 className="text-xl font-semibold mb-4  text-teal-500 ">
+                  LeadId
+                </h2>
               </div>
-            </div>
-          ))}
-        </div> */}
-
-
-
-        <div className="w-1/2 p-4">
-      <h1 className="text-xl font-semibold mb-4 text-black">
-        Leads Created By: {email}...
-      </h1>
-      <div className="flex justify-between">
-        <h2 className="text-xl font-semibold mb-4" style={{ color: "#7a7575" }}>
-          Overall Count:
-        </h2>
-        <h2 className="text-xl font-semibold mb-4" style={{ color: "#7a7575" }}>
-          600
-        </h2>
-      </div>
-      {Object.keys(groupedLeads).map((createdBy, index) => (
-        <div key={index}>
-          <div className="flex justify-between">
-          <h2 className="text-xl font-semibold mb-4  text-teal-500  ">{createdBy}</h2>
-          <h2 className="text-xl font-semibold mb-4  text-teal-500 ">LeadId</h2>
-          </div>
-          {groupedLeads[createdBy].map((leadItem, leadIndex) => (
-            <div
-              key={leadIndex}
-              className="cursor-pointer bg-white rounded-lg shadow-md p-6 mb-4 text-black"
-              onClick={() => handleLeadClick(leadItem)}
-            >
-              <div className="flex justify-between">
-                <h2 className="text-xl font-semibold mb-4">{leadItem.createdBy}</h2>
-                <h2> {leadItem.mleadId}</h2>
-              </div>
+              {groupedLeads[createdBy].map(
+                (leadItem, leadIndex) =>
+                  expandedGroups[createdBy] && (
+                    <div
+                      key={leadIndex}
+                      className="cursor-pointer bg-white rounded-lg shadow-md p-6 mb-4 text-black"
+                      onClick={() => handleLeadClick(leadItem)}
+                    >
+                      <div className="flex justify-between">
+                        <h2 className="text-xl font-semibold mb-4">
+                          {leadItem.createdBy}
+                        </h2>
+                        <h2> {leadItem.mleadId}</h2>
+                      </div>
+                    </div>
+                  )
+              )}
             </div>
           ))}
         </div>
-      ))}
       </div>
-
-
-</div>
 
       <div id="map" style={{ height: "400px" }}></div>
     </AdminLayout>
