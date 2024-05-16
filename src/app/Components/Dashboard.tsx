@@ -524,7 +524,10 @@ React.useEffect(() => {
       </div>
       {Object.keys(groupedLeads).map((createdBy, index) => (
         <div key={index}>
-          <h2 className="text-xl font-semibold mb-4">{createdBy}</h2>
+          <div className="flex justify-between">
+          <h2 className="text-xl font-semibold mb-4  text-teal-500  ">{createdBy}</h2>
+          <h2 className="text-xl font-semibold mb-4  text-teal-500 ">LeadId</h2>
+          </div>
           {groupedLeads[createdBy].map((leadItem, leadIndex) => (
             <div
               key={leadIndex}
@@ -533,7 +536,7 @@ React.useEffect(() => {
             >
               <div className="flex justify-between">
                 <h2 className="text-xl font-semibold mb-4">{leadItem.createdBy}</h2>
-                <h2>leadId {leadItem.leadId}</h2>
+                <h2> {leadItem.mleadId}</h2>
               </div>
             </div>
           ))}
