@@ -4,16 +4,19 @@ import AdminLayout from "@/app/Components/AdminLayout";
 import { FiPaperclip, FiMapPin } from "react-icons/fi";
 import { FaCommentDots } from "react-icons/fa";
 import { BsThreeDots } from "react-icons/bs";
-import { usePodioStore, setAddress } from "../podioStore";
+// import { usePodioStore} from "../podioStore";
+import { usePodioStore } from "../podioStore";
 import { formatTimeAgo } from "../helpingFunctions/formatTimeAgo";
 import { extractBeforeAt } from "../helpingFunctions/extractBeforeAt";
 import GoogleMapContainer from "@/app/Components/GoogleMapContainer";
 import Activity from "@/app/Components/Activity";
 
 interface DataType {
+  createdBy: string;
+  leadId: string;
   _id: number;
   mleadId: number;
-  createdBy: string;
+  // createdBy: string;
   sellerName: string;
   sellerPhone: number;
   sellerOtherPhone: number;
@@ -23,6 +26,7 @@ interface DataType {
   note: string;
   motivation: string;
   idealPrice: number;
+  // [key: string]: any; // Index signature
 }
 
 interface DataTypetwo {
@@ -34,11 +38,27 @@ interface DataTypetwo {
 interface proparr {
   prev: string;
 }
+//Includ types from tpe..
+interface LeadItem extends DataType {
+  createdBy: string;
+  leadId: string;
+}
+
+interface Props {
+  email: string;
+  lead: LeadItem[];
+  handleLeadClick: (leadItem: LeadItem) => void;
+}
 
 const Page: React.FC = () => {
-  const podioStore = usePodioStore();
-  const { email } = usePodioStore(); // Access the email from the store
+  // const podioStore = usePodioStore();
+  // const { email } = usePodioStore(); // Access the email from the store
+
+
+  const podioStore = usePodioStore(); // Use the store
+  const {email}=usePodioStore();
   const { mentionedUser } = usePodioStore();
+  const {identity}=usePodioStore();
 
   const [lead, setLead] = useState<DataType[]>([]);
   const [selectedLead, setSelectedLead] = useState<DataType | null>(null);
@@ -61,21 +81,24 @@ const Page: React.FC = () => {
   const [isMentioned, setIsMentioned] = useState(false);
   const [mentionedName, setMentionedName] = useState<string>("");
   const [notifyUser, setNotifyUser] = useState<string>();
+  const [sendNotificationto,setSentNotificationto]=useState<boolean>(false)
   // Define state to store unique names
   const [uniqueNames, setUniqueNames] = useState<string[]>([]);
+  const [groupedLeads, setGroupedLeads] = useState<Record<string, LeadItem[]>>({});
 
   const handleLeadClick = (leadItem: DataType) => {
     console.log("lead", mentionedComment);
-
+    console.log('email from store',email);
     setSelectedLead(leadItem);
+    // const createdBy = (leadItem as { createdBy: string }).createdBy; // Add this line
     setmLeadId(leadItem.mleadId); // Set mleadId when lead is clicked
     setCommenter(extractBeforeAt(email));
-    podioStore.setEmail(email);
+    // podioStore.setEmail(email);
     fetchComment(leadItem.mleadId);
     setAddress(leadItem.address);
     podioStore.setAddress(address);
-    console.log(podioStore, "check addres in podio store");
-    console.log("adress check", address);
+    // console.log(podioStore, "check addres in podio store");
+    // console.log("adress check", address);
     setCreatedBy(leadItem.createdBy);
   };
 
@@ -131,13 +154,6 @@ const Page: React.FC = () => {
     console.log("I found the name new ethod", part);
   };
 
-  // useEffect(() => {
-  //   fetchComments?.forEach(item => {
-  //     item.comment.split(" ").forEach(part => {
-  //       sendNotification(part);
-  //     });
-  //   });
-  // }, [comment]);
 
   const handleAttachmentClick = () => {
     fileInputRef.current?.click();
@@ -176,6 +192,10 @@ const Page: React.FC = () => {
       }
       // Extract mentioned name from the comment
       console.log("coment extracted", comment);
+      console.log(email,'email checkingggg');
+      console.log('podio store',podioStore);
+      
+
 
       // Split the comment text by spaces
       const commentWords = comment.split(" ");
@@ -184,16 +204,43 @@ const Page: React.FC = () => {
 
       setNotifyUser(firstWord);
       console.log("notifies user", notifyUser);
+      
     } catch (error) {
       console.log("errerrr", error);
     }
   };
 
-  // Function to send notifications
-  const sendNotifications = () => {
-    // Implement your notification logic here
-    console.log(`Sending notification to ${notifyUser}`);
-  };
+ // Function to send notifications
+const sendNotifications = () => {
+  // Implement your notification logic here
+  
+  if (notifyUser === createdBy) {
+      console.log(`Sending notification to ${notifyUser}`);
+      setSentNotificationto(true); // Corrected variable name
+      console.log('Notification sent');
+  } else {
+      console.log('Commenter:', commenter);
+      console.log('typeof',typeof notifyUser, typeof createdBy);
+      
+  }
+};
+
+
+// Function to combine createdBy items which are similar
+const combineCreatedByItems = (leads: LeadItem[]) => {
+  const groupedLeads: Record<string, LeadItem[]> = {};
+  leads.forEach((lead) => {
+    if (!groupedLeads[lead.createdBy]) {
+      groupedLeads[lead.createdBy] = [];
+    }
+    groupedLeads[lead.createdBy].push(lead);
+  });
+  return groupedLeads;
+};
+// Update groupedLeads when lead prop changes
+React.useEffect(() => {
+  setGroupedLeads(combineCreatedByItems(lead));
+}, [lead]);
 
   useEffect(() => {
     // if (notifyUser.length>0) {
@@ -323,7 +370,7 @@ const Page: React.FC = () => {
                   </h2>
                   <div className="grid grid-cols-2 gap-4 px-4 py-2">
                     <div>
-                      <p className="font-semibold">Created By:</p>
+                      <p className="font-semibold">Created By:{identity}</p>
                       <p className="font-semibold">Location:</p>
                       <p className="font-semibold">Seller Name:</p>
                       <p className="font-semibold">Seller Phone:</p>
@@ -361,12 +408,11 @@ const Page: React.FC = () => {
                   <div className="flex items-center">
                     <FaCommentDots size={24} color="silver" />
                     <button
-                      // className="flex items-center"
                       onClick={() => {
                         setAllcomments(!allcomments);
                       }}
                     >
-                      Show All Comments
+                      Show All  yyy{sendNotificationto?(<p>received</p>):""}
                     </button>
                   </div>
                 ) : (
@@ -395,7 +441,9 @@ const Page: React.FC = () => {
                       className="bg-white rounded-lg shadow-md p-6 text-black mt-5"
                     >
                       <div className="flex">
-                        <p className="mr-20">{item.commenter}</p>
+                        {/* <p className="mr-20">{item.commenter}</p> */}
+                        <p className="mr-20">{email}</p>
+
                         <p>
                           {formatTimeAgo(new Date(item.time).toLocaleString())}
                         </p>
@@ -428,9 +476,9 @@ const Page: React.FC = () => {
           )}
         </div>
         {/* RIGHT SECTION:LEADS:::::::::::::::::::::::::::::::::::::: */}
-        <div className="w-1/2 p-4">
+        {/* <div className="w-1/2 p-4">
           <h1 className="text-xl font-semibold mb-4 text-black">
-            Leads Created By
+            Leads Created By:{email}...
           </h1>
           <div className="flex justify-between">
             <h2
@@ -458,8 +506,44 @@ const Page: React.FC = () => {
               </div>
             </div>
           ))}
-        </div>
+        </div> */}
+
+
+
+        <div className="w-1/2 p-4">
+      <h1 className="text-xl font-semibold mb-4 text-black">
+        Leads Created By: {email}...
+      </h1>
+      <div className="flex justify-between">
+        <h2 className="text-xl font-semibold mb-4" style={{ color: "#7a7575" }}>
+          Overall Count:
+        </h2>
+        <h2 className="text-xl font-semibold mb-4" style={{ color: "#7a7575" }}>
+          600
+        </h2>
       </div>
+      {Object.keys(groupedLeads).map((createdBy, index) => (
+        <div key={index}>
+          <h2 className="text-xl font-semibold mb-4">{createdBy}</h2>
+          {groupedLeads[createdBy].map((leadItem, leadIndex) => (
+            <div
+              key={leadIndex}
+              className="cursor-pointer bg-white rounded-lg shadow-md p-6 mb-4 text-black"
+              onClick={() => handleLeadClick(leadItem)}
+            >
+              <div className="flex justify-between">
+                <h2 className="text-xl font-semibold mb-4">{leadItem.createdBy}</h2>
+                <h2>leadId {leadItem.leadId}</h2>
+              </div>
+            </div>
+          ))}
+        </div>
+      ))}
+      </div>
+
+
+</div>
+
       <div id="map" style={{ height: "400px" }}></div>
     </AdminLayout>
   );

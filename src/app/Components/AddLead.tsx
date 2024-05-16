@@ -3,7 +3,7 @@
 import { log } from "console";
 import { response } from "express";
 import { IntegerType } from "mongodb";
-import React, { ReactEventHandler, useEffect, useState } from "react";
+import React, { ReactEventHandler, use, useEffect, useState } from "react";
 import AdminLayout from "../Components/AdminLayout";
 import { usePodioStore } from "../podioStore";
 import Dashboard from "@/app/Components/Dashboard";
@@ -13,12 +13,12 @@ import Dashboard from "@/app/Components/Dashboard";
 interface WebFormProps {
   id: number;
 }
-
 const WebForm: React.FC = () => {
   //I want to add UserName from here to store...
 
   const podioStore = usePodioStore(); // Use the store
-  console.log("podio store from add lead", podioStore);
+  const {email}=usePodioStore();
+  // console.log("podio store from add lead", podioStore);
 
   interface OptionType {
     _id: number;
@@ -112,12 +112,13 @@ const WebForm: React.FC = () => {
 
   return (
     <>
-      {submit ? (
+      {
+      // submit ? (
         <AdminLayout>
           <div className="flex justify-center items-center h-full text-black">
             <div className="w-full max-w-4xl p-6 bg-gray-100 rounded-lg">
               <h1 className="text-3xl font-bold mb-6 text-center text-black">
-                Texas Propmover LLC LEADS
+                Texas Propmover LLC LEADS :Helloe {email}
               </h1>
               <div className="mb-4">
                 <label htmlFor="sellerInfo" className="block mb-1 text-black">
@@ -309,10 +310,11 @@ const WebForm: React.FC = () => {
             </div>
           </div>
         </AdminLayout>
-      ) : (
+      // ) : (
         // <div>submitted</div>
-        <Dashboard />
-      )}
+        // <Dashboard />
+      // )
+      }
     </>
   );
 };

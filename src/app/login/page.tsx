@@ -52,11 +52,14 @@ const Login: React.FC = () => {
       body: JSON.stringify({ email, password }),
     });
     podioStore.setEmail(email); // Set the email in the store
+    podioStore.setIdentity(email);
+    await console.log ('console emeail change',email);
+    
  
 
     //If checkData exist 
     if(checkData.ok){
-      // console.log(podioStore,'podio storeeee.........................');
+      console.log(podioStore,'podio storeeee.........................');
       
     //Id that received from API
     const res = await checkData.json();
