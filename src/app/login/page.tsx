@@ -53,7 +53,7 @@ const Login: React.FC = () => {
     });
     podioStore.setEmail(email); // Set the email in the store
     podioStore.setIdentity(email);
-    await console.log ('console emeail change',email);
+    // await console.log ('console emeail change',email);0
     
  
 

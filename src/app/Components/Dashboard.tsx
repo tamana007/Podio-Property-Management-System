@@ -504,7 +504,7 @@ const Page: React.FC = () => {
               className="text-xl font-semibold mb-4"
               style={{ color: "#7a7575" }}
             >
-              600
+              {lead.length}
             </h2>
           </div>
           {Object.keys(groupedLeads).map((createdBy, index) => (

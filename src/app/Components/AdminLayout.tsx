@@ -4,6 +4,7 @@ import React, { ReactNode } from 'react';
 import { ToastContainer } from 'react-toastify';
 import '@/app/customeToast.css';
 import Head from 'next/head';
+import Link from 'next/link';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -36,29 +37,32 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           <ul className="mt-4">
             {/* Sidebar Links */}
             <li className="mb-2">
-              <a href='/register' className="block py-2 px-4 bg-teal-700 hover:bg-teal-600 rounded">
+              <Link href='/register' className="block py-2 px-4 bg-teal-700 hover:bg-teal-600 rounded">
                 Register
-              </a>
+              </Link>
             </li>
             <li className="mb-2">
-              <a href='/login' className="block py-2 px-4 bg-teal-700 hover:bg-teal-600 rounded">
+              <Link href='/login' className="block py-2 px-4 bg-teal-700 hover:bg-teal-600 rounded">
                 Login
-              </a>
+              </Link>
             </li>
             <li className="mb-2">
-              <a href="#" className="block py-2 px-4 bg-teal-700 hover:bg-teal-600 rounded">
+              <Link href="#" className="block py-2 px-4 bg-teal-700 hover:bg-teal-600 rounded">
                 Add Lead
-              </a>
+              </Link>
             </li>
             <li className="mb-2">
-              <a href='./dashboard' className="block py-2 px-4 bg-teal-700 hover:bg-teal-600 rounded">
+              <Link href='/dashboard' className="block py-2 px-4 bg-teal-700 hover:bg-teal-600 rounded">
+              {/* <a href='/dashboard' className="block py-2 px-4 bg-teal-700 hover:bg-teal-600 rounded">
+              </a> */}
                 Dashboard
-              </a>
+              
+              </Link>
             </li>
             <li className="mb-2">
-              <a href="#" className="block py-2 px-4 bg-teal-700 hover:bg-teal-600 rounded">
-                Properties
-              </a>
+              <Link href='/profile' className="block py-2 px-4 bg-teal-700 hover:bg-teal-600 rounded">
+                Profile
+              </Link>
             </li>
            
           </ul>
