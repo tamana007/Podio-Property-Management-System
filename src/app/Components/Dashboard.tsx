@@ -1,24 +1,24 @@
 "use client";
-import React, { Component, useEffect, useRef, useState } from "react";
+import React, { FormEvent, ReactEventHandler, useEffect, useRef, useState } from "react";
 import AdminLayout from "@/app/Components/AdminLayout";
 import { FiPaperclip, FiMapPin } from "react-icons/fi";
-import { FaCommentDots } from "react-icons/fa";
-import { BsThreeDots } from "react-icons/bs";
-import { FaPlus, FaMinus } from 'react-icons/fa';
-
-// import { usePodioStore} from "../podioStore";
+import { FaCommentDots, FaPlus, FaMinus } from "react-icons/fa";
+import socket from "../utils/socket";
 import { usePodioStore } from "../podioStore";
 import { formatTimeAgo } from "../helpingFunctions/formatTimeAgo";
 import { extractBeforeAt } from "../helpingFunctions/extractBeforeAt";
 import GoogleMapContainer from "@/app/Components/GoogleMapContainer";
 import Activity from "@/app/Components/Activity";
+// const Profile = dynamic(() => import("./Profile"), { ssr: false });
+import Profile from "./Profile";
+// import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 interface DataType {
   createdBy: string;
   leadId: string;
   _id: number;
   mleadId: number;
-  // createdBy: string;
   sellerName: string;
   sellerPhone: number;
   sellerOtherPhone: number;
@@ -28,7 +28,6 @@ interface DataType {
   note: string;
   motivation: string;
   idealPrice: number;
-  // [key: string]: any; // Index signature
 }
 
 interface DataTypetwo {
@@ -37,26 +36,15 @@ interface DataTypetwo {
   comment: string;
   leadId: number;
 }
-interface proparr {
-  prev: string;
-}
-//Includ types from tpe..
+
 interface LeadItem extends DataType {
   createdBy: string;
   leadId: string;
 }
 
-interface Props {
-  email: string;
-  lead: LeadItem[];
-  handleLeadClick: (leadItem: LeadItem) => void;
-}
-
 const Page: React.FC = () => {
-  // const podioStore = usePodioStore();
-  // const { email } = usePodioStore(); // Access the email from the store
 
-  const podioStore = usePodioStore(); // Use the store
+  const podioStore = usePodioStore();
   const { email } = usePodioStore();
   const { mentionedUser } = usePodioStore();
   const { identity } = usePodioStore();
@@ -83,33 +71,34 @@ const Page: React.FC = () => {
   const [mentionedName, setMentionedName] = useState<string>("");
   const [notifyUser, setNotifyUser] = useState<string>();
   const [sendNotificationto, setSentNotificationto] = useState<boolean>(false);
-  // Define state to store unique names
   const [uniqueNames, setUniqueNames] = useState<string[]>([]);
-  const [groupedLeads, setGroupedLeads] = useState<Record<string, LeadItem[]>>(
-    {}
-  );
-  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(
-    {}
-  );
+  const [groupedLeads, setGroupedLeads] = useState<Record<string, LeadItem[]>>({});
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
+  const [showProfile,setShowProfile]=useState(false);
 
-  //Right Section Functions::::::::::::
+  // const router = useRouter();
+
+
+
+  // useEffect(() => {
+  //   const ws = new WebSocket('ws://localhost:8080');
+  //   ws.onopen = () => {
+  //     console.log('Connected to WebSocket server');
+  //   };
+  //   return () => {
+  //     ws.close();
+  //   };
+  // }, []);
+
   const handleLeadClick = (leadItem: DataType) => {
-    console.log("lead", mentionedComment);
-    console.log("email from store", email);
     setSelectedLead(leadItem);
-    // const createdBy = (leadItem as { createdBy: string }).createdBy; // Add this line
-    setmLeadId(leadItem.mleadId); // Set mleadId when lead is clicked
+    setmLeadId(leadItem.mleadId);
     setCommenter(extractBeforeAt(email));
-    // podioStore.setEmail(email);
     fetchComment(leadItem.mleadId);
     setAddress(leadItem.address);
-    podioStore.setAddress(address);
-    // console.log(podioStore, "check addres in podio store");
-    // console.log("adress check", address);
     setCreatedBy(leadItem.createdBy);
   };
 
-  //toggle the expansion state
   const toggleGroup = (createdBy: string) => {
     setExpandedGroups((prevExpandedGroups) => ({
       ...prevExpandedGroups,
@@ -117,7 +106,6 @@ const Page: React.FC = () => {
     }));
   };
 
-  // Function to combine createdBy items which are similar
   const combineCreatedByItems = (leads: LeadItem[]) => {
     const groupedLeads: Record<string, LeadItem[]> = {};
     leads.forEach((lead) => {
@@ -128,38 +116,28 @@ const Page: React.FC = () => {
     });
     return groupedLeads;
   };
-  // Update groupedLeads when lead prop changes
+
   React.useEffect(() => {
     setGroupedLeads(combineCreatedByItems(lead));
   }, [lead]);
 
-
-  //Left Section FUNCTIONS::::::::::::::::::::::::::
-  //Store User's Names inside the state
   useEffect(() => {
-    //I want to store Unique names using SET
     const uniqueUserName: Set<string> = new Set();
     const users = lead.map((item) => {
       uniqueUserName.add(item.createdBy);
     });
-    // Convert the Set back to an array
     const uniqueNamesArray: string[] = Array.from(uniqueUserName);
     setMentionedComment(uniqueNamesArray);
   }, [mleadId]);
-  useEffect(() => {}, [selectedLead]);
 
   const commentFunc = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setComment(e.target.value);
     if (e.target.value.includes("@")) {
-      // Check if "@" is followed by a space or other characters
       const atIndex = e.target.value.indexOf("@");
       const spaceIndex = e.target.value.indexOf(" ", atIndex);
       if (spaceIndex === -1 || spaceIndex === atIndex + 1) {
-        // "@" is followed by a space or there are characters immediately after "@"
         setAtClicked(true);
-        // console.log("comment includes @", mentionedUser);
       } else {
-        // Typing after mentioning a name, hide the dropdown list
         setAtClicked(false);
       }
     } else {
@@ -168,11 +146,8 @@ const Page: React.FC = () => {
   };
 
   function mentionFunc(user: string) {
-    // console.log("user detected", typeof user);
     setFoundUser(user);
     setAtClicked(!atClicked);
-
-    // console.log("founder", foundUser);
   }
 
   useEffect(() => {
@@ -183,12 +158,21 @@ const Page: React.FC = () => {
     }
   }, [foundUser]);
 
-  // const sendNotification = (part: string) => {
-  //   console.log("I found the name new ethod", part);
-  // };
-
   const handleAttachmentClick = () => {
     fileInputRef.current?.click();
+    console.log('click attachment');
+    
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Handle file selection here
+    const file = e.target.files[0];
+    // You can perform additional operations with the selected file
+    if (file) {
+      console.log('Selected file:', file);
+      // Additional operations with the file
+    }
+    // console.log('Selected file:', file);
   };
 
   const fetchComment = async (mleadId: number) => {
@@ -218,57 +202,25 @@ const Page: React.FC = () => {
       });
       const res = await sendComment.json();
       setComment("");
-      fetchComment(mleadId);
+      // fetchComment(mleadId);
+      
+      fetchComments && setFetchComment([...fetchComments, { commenter, time, comment, leadId:mleadId }])
+
       if (res.ok) {
         console.log("result received", res);
       }
-      // Extract mentioned name from the comment
-      console.log("coment extracted", comment);
-      console.log(email, "email checkingggg");
-      console.log("podio store", podioStore);
 
-      // Split the comment text by spaces
       const commentWords = comment.split(" ");
-      // Get the first word
       const firstWord = commentWords[0];
 
       setNotifyUser(firstWord);
-      console.log("notifies user", notifyUser);
     } catch (error) {
       console.log("errerrr", error);
     }
   };
-
-  // Function to send notifications
-  // const sendNotifications = () => {
-  //   // Implement your notification logic here
-
-  //   if (notifyUser === createdBy) {
-  //     console.log(`Sending notification to ${notifyUser}`);
-  //     setSentNotificationto(true); // Corrected variable name
-  //     console.log("Notification sent");
-  //   } else {
-  //     console.log("Commenter:", commenter);
-  //     console.log("typeof", typeof notifyUser, typeof createdBy);
-  //   }
+  // const handleProfileClick = () => {
+  //   router.push('/profile');
   // };
-
-  
-
-  // useEffect(() => {
-  //   // if (notifyUser.length>0) {
-  //   sendNotifications();
-  //   // }
-  // }, [notifyUser]);
-  // useEffect(() => {
-  //   console.log("mentioned name", mentionedName);
-  // }, [mentionedName]);
-
-  // useEffect(() => {
-  //   if (mentionedName) {
-  //     sendNotification(mentionedName);
-  //   }
-  // }, [mentionedName]);
 
   const handleShareLocation = () => {
     const googleMapsUrl = "https://www.google.com/maps";
@@ -276,8 +228,6 @@ const Page: React.FC = () => {
 
     const urlChangeListener = (event: MessageEvent) => {
       if (event.origin === "https://www.google.com") {
-        console.log("URL EVENT LISTENED");
-
         const googleMapsUrl = event.data;
         const match = googleMapsUrl.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
         if (match) {
@@ -306,11 +256,18 @@ const Page: React.FC = () => {
     toFetch();
   }, []);
 
-  const mentionedClass = isMentioned ? "bold-text" : "";
-
   return (
+    <>
+      {showProfile ? <Profile/> :(
+
     <AdminLayout>
+       <div className="text-blue-500">
+          <button type="button" onClick={()=>{setShowProfile(true)}}>Show Profile</button>
+         </div>
+
+  
       <div className="flex bg-gray-100">
+      
         <div className="w-1/2 p-4 border-r">
           {selectedLead && (
             <>
@@ -358,11 +315,12 @@ const Page: React.FC = () => {
                       className="text-teal-600 cursor-pointer hover:text-gray-900"
                       size={24}
                       onClick={handleAttachmentClick}
+                      // onChange={handleFileChange}
                     />
                     <FiMapPin
                       className="text-teal-600 cursor-pointer hover:text-gray-900 ml-2"
                       size={24}
-                      // onClick={handleShareLocation}
+                      onClick={handleShareLocation}
                     />
 
                     <button
@@ -452,17 +410,14 @@ const Page: React.FC = () => {
                       className="bg-white rounded-lg shadow-md p-6 text-black mt-5"
                     >
                       <div className="flex">
-                        {/* <p className="mr-20">{item.commenter}</p> */}
-                        <p className="mr-20">{email}</p>
+                        <p className="mr-20">{item.commenter}</p>
 
                         <p>
                           {formatTimeAgo(new Date(item.time).toLocaleString())}
                         </p>
                       </div>
-                      {/* Split the comment text by "@" symbol */}
 
                       {item.comment.split(" ").map((part, partIndex) => {
-                        // sendNotification(part); // Call sendNotification here
                         return (
                           <span
                             key={partIndex}
@@ -472,7 +427,6 @@ const Page: React.FC = () => {
                                 : ""
                             }
                           >
-                            {/* Render the first part as bold */}
                             {partIndex === 0 ? part : ` ${part}`}
                           </span>
                         );
@@ -480,9 +434,8 @@ const Page: React.FC = () => {
                     </div>
                   ))}
               </div>
-              {/* <Activity createdBy={createdBy} mleadId={mleadId}/>
-               */}
-              <Activity createdBy={createdBy} mleadId={mleadId} />
+              <Activity createdBy={createdBy} mleadId={mleadId}
+              />
             </>
           )}
         </div>
@@ -490,6 +443,12 @@ const Page: React.FC = () => {
         {/* RIGHT SECTION:LEADS:::::::::::::::::::::::::::::::::::::: */}
 
         <div className="w-1/2 p-4">
+        {/* <button type="button" onClick={handleProfileClick}>Check your profile</button>
+         */}
+        
+
+
+
           <h1 className="text-xl font-semibold mb-4 text-black">
             Leads Created By: {email}...
           </h1>
@@ -514,10 +473,24 @@ const Page: React.FC = () => {
                   onClick={() => toggleGroup(createdBy)}
                   className="text-xl font-semibold mb-4 cursor-pointer  text-teal-500  "
                 >
-                  {expandedGroups[createdBy] ? <div className="flex justify-between"><span>{createdBy} </span><span className="text-teal-500">  <FaMinus/>   </span></div> : <div className="flex justify-between ml-5px"><span>{createdBy}</span><span className="text-teal-500"> <FaPlus/></span></div>}
-                  
+                  {expandedGroups[createdBy] ? (
+                    <div className="flex justify-between">
+                      <span>{createdBy} </span>
+                      <span className="text-teal-500">
+                        <FaMinus />{" "}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex justify-between ml-5px">
+                      <span>{createdBy}</span>
+                      <span className="text-teal-500">
+                        {" "}
+                        <FaPlus />
+                      </span>
+                    </div>
+                  )}
                 </h2>
-                {/* {} */}
+
                 <h2 className="text-xl font-semibold mb-4  text-teal-500 ">
                   {groupedLeads[createdBy].length}
                 </h2>
@@ -543,9 +516,12 @@ const Page: React.FC = () => {
           ))}
         </div>
       </div>
-
       <div id="map" style={{ height: "400px" }}></div>
     </AdminLayout>
+  )}
+
+    </>
+
   );
 };
 
