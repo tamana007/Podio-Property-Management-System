@@ -7,6 +7,16 @@ import { usePodioStore } from '../podioStore';
 import socket from '../utils/socket';
 // import { useRouter } from 'next/router';
 
+interface DataTypetwo {
+  commenter: string;
+  time: Date;
+  comment: string;
+  leadId: number;
+}
+interface ProfileProps {
+  fetchComments: DataTypetwo[];
+}
+
 type Comment = {
   commenter: string;
   time: string;
@@ -14,31 +24,29 @@ type Comment = {
   mleadId: number;
 };
 
-const Profile: NextPage = () => {
+const Profile: NextPage <ProfileProps>= ({fetchComments}) => {
+  const [comments, setComments] = useState<DataTypetwo[]>([]);
   const podioStore = usePodioStore();
   const { email, logout } = usePodioStore();
   const [notifications, setNotifications] = useState<Comment[]>([]); // State for notifications
-  // const router = useRouter(); // Move the useRouter hook outside the function
 
-  const handleFetchnotification = async () => {
-    console.log('clicked---------------');
 
-    try {
-      const fetchNotification = await fetch('api/notification');
-      const responsed = await fetchNotification.json();
-      console.log('consoledddddddddddddd', responsed);
-
-      setNotifications([...notifications, responsed]);
-
-      console.log('response frao api Notification.............',notifications);
-      console.log('response frao api res.............',responsed);
-    } catch (error) {
-      console.log('error happend', error);
-    }
+  const handleFetchnotification = () => {
+    console.log('fetched comment', fetchComments);
+  
+    const commentElements = fetchComments.map((comment) => (
+      <p key={comment.leadId}>
+        {comment.commenter} - {comment.comment}
+      </p>
+    ));
+  
+    return commentElements;
   };
 
   useEffect(() => {
     console.log('Notifications updated:', notifications);
+    console.log('prp',fetchComments);
+    
 
     // Move the handleRouterQuery function inside the useEffect hook
     const handleRouterQuery = () => {
@@ -52,26 +60,11 @@ const Profile: NextPage = () => {
     }
   }, [notifications]);
 
-  // ... (rest of the code remains the same)
 
-  // ... (rest of the code remains the same)
-  
-
-  // useEffect(() => {
-  //   socket.onmessage = (event) => {
-  //     const { type, message, link } = JSON.parse(event.data);
-  //     if (type === 'notification') {
-  //       setNotifications((prev) => [...prev, { message, link }]);
-  //     }
-  //   };
-
-  //   return () => {
-  //     socket.close();
-  //   };
-  // }, []);
 
   const handleLogout = () => {
-    logout();
+    
+    // logout();
   };
 
   return (
@@ -85,18 +78,11 @@ const Profile: NextPage = () => {
         <div className="mt-6 text-black">
           <h2 className="text-2xl font-semibold">Notifications</h2>
           <button className='text-black' type='button' onClick={handleFetchnotification}>show notifications</button>
+          {handleFetchnotification()}
           <div className='text-black'>
             {notifications.map((not)=>(<p className='text-black'>{not.comment} lst   </p>))}
-          </div>
-          {/* <ul>
-            {notifications.map((notification, index) => (
-              <li key={index} className="mb-2">
-                <a href={notification.link} className="text-blue-500">
-                  {notification.message}
-                </a>
-              </li>
-            ))}
-          </ul> */}
+
+          
         </div>
       </div>
     </AdminLayout>

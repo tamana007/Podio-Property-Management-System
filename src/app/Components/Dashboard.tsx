@@ -97,6 +97,8 @@ const Page: React.FC = () => {
     fetchComment(leadItem.mleadId);
     setAddress(leadItem.address);
     setCreatedBy(leadItem.createdBy);
+    // console.log('fetched comment',fetchComments);
+    
   };
 
   const toggleGroup = (createdBy: string) => {
@@ -208,6 +210,8 @@ const Page: React.FC = () => {
 
       if (res.ok) {
         console.log("result received", res);
+        console.log('fetch user object',fetchComments);
+        
       }
 
       const commentWords = comment.split(" ");
@@ -221,6 +225,7 @@ const Page: React.FC = () => {
   // const handleProfileClick = () => {
   //   router.push('/profile');
   // };
+ 
 
   const handleShareLocation = () => {
     const googleMapsUrl = "https://www.google.com/maps";
@@ -258,7 +263,7 @@ const Page: React.FC = () => {
 
   return (
     <>
-      {showProfile ? <Profile/> :(
+      {showProfile ? <Profile fetchComments={fetchComments} /> :(
 
     <AdminLayout>
        <div className="text-blue-500">
